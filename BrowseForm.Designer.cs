@@ -45,10 +45,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.plexTreeView.ContextMenuStrip = this.contextMenuStrip1;
-            this.plexTreeView.Location = new System.Drawing.Point(22, 31);
+            this.plexTreeView.Location = new System.Drawing.Point(13, 31);
             this.plexTreeView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.plexTreeView.Name = "plexTreeView";
-            this.plexTreeView.Size = new System.Drawing.Size(479, 453);
+            this.plexTreeView.Size = new System.Drawing.Size(488, 453);
             this.plexTreeView.TabIndex = 0;
             this.plexTreeView.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView1_BeforeExpand);
             this.plexTreeView.DoubleClick += new System.EventHandler(this.treeView1_DoubleClick);
@@ -100,7 +100,7 @@
             this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "BrowseForm";
             this.Text = "Server List";
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Load += new System.EventHandler(this.BrowseForm_Load);
             this.contextMenuStrip1.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();

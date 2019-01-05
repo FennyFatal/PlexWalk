@@ -19,6 +19,7 @@ namespace PlexWalk
     {
         private DownloadDialog downloadDialog = null;
         const string libraryBasePath = "/library/sections";
+        string ownedPath = libraryBasePath;
         static TreeNode selected = null;
         public class Descriptor
         {
@@ -130,7 +131,7 @@ namespace PlexWalk
                 int port;
                 string accessToken = "";
                 string scheme;
-                string basepath;
+                string basepath = libraryBasePath;
                 while (reader.ReadToFollowing("Server"))
                 {
                     if (!reader.MoveToAttribute("name"))
@@ -153,13 +154,14 @@ namespace PlexWalk
                     {
                         accessToken = reader.ReadContentAsString();
                         accessToken = String.Format("X-Plex-Token={0}", accessToken);
-                        basepath = libraryBasePath;
                     }
                     else
                     {
                         accessToken = String.Format("X-Plex-Token={0}", Descriptor.myToken);
-                        basepath = "";
+                        basepath = ownedPath;
                     }
+                    if (reader.MoveToAttribute("owned") && reader.ReadContentAsString() == "1")
+                        basepath = ownedPath;
                     
                     TreeNode node = new TreeNode(name);
                     node.Tag = new Descriptor(String.Format("{0}://{1}:{2}", scheme, address, port), accessToken);
@@ -170,11 +172,15 @@ namespace PlexWalk
             #endregion
             return tn.Nodes;
         }
-        private void Form1_Load(object sender, EventArgs e)
+        private void BrowseForm_Load(object sender, EventArgs e)
         {
         Descriptor.GUID = Guid.NewGuid().ToString();
             using (WebClient wc = new System.Net.WebClient())
             {
+                if (args.ContainsKey("owned_path"))
+                {
+                    ownedPath = args["owned_path"];
+                }
                 bool noToken = true;
                 if (args.ContainsKey("server_xml"))
                 {
