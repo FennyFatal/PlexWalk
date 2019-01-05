@@ -11,6 +11,7 @@ using System.Net;
 using System.IO;
 using System.Collections.Specialized;
 using System.Collections;
+using System.Threading;
 
 namespace PlexWalk
 {
@@ -257,18 +258,59 @@ namespace PlexWalk
         }
         private void treeView1_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
-            TreeNode src = e.Node;
-            if (src.FirstNode.Text == null || src.FirstNode.Text == "")
+            ThreadPool.QueueUserWorkItem(delegate(object state)
             {
-                src.Nodes.Clear();
-                try
+                object[] array = state as object[];
+                TreeNode src = (TreeNode)array[0];
+                if (src.FirstNode.Text == null || src.FirstNode.Text == "")
                 {
-                    populateSubNodes(src);
+                    ClearNodes(sender, src);
+                    try
+                    {
+                        populateSubNodes(src);
+                    }
+                    catch
+                    {
+                    }
                 }
-                catch
-                {
-                }
+            } , new object[] { e.Node });
+        }
+
+        delegate void ChangeNodeCallback(object sender, TreeNode src);
+
+        private void ExpandNode(object sender, TreeNode src)
+        {
+            if (((Control)sender).InvokeRequired)
+            {
+                ChangeNodeCallback d = new ChangeNodeCallback(ExpandNode);
+                this.Invoke(d, new object[] { sender, src });
             }
+            else
+                populateSubNodes(src);
+        }
+
+        private void ClearNodes(object sender, TreeNode src)
+        {
+            if (((Control)sender).InvokeRequired)
+            {
+                ChangeNodeCallback d = new ChangeNodeCallback(ClearNodes);
+                this.Invoke(d, new object[] { sender, src });
+            }
+            else
+                src.Nodes.Clear();
+        }
+
+        delegate void AddNodeCallback(TreeNode Parent, TreeNode Child);
+
+        private void AddNode(TreeNode Parent, TreeNode Child)
+        {
+            if (plexTreeView.InvokeRequired)
+            {
+                AddNodeCallback d = new AddNodeCallback(AddNode);
+                this.Invoke(d, new object[] { Parent, Child });
+            }
+            else
+                Parent.Nodes.Add(Child);
         }
         private void populateSubNodes(TreeNode tnode)
         {
@@ -364,7 +406,7 @@ namespace PlexWalk
                                 if (seasonNumber != null)
                                     ((Descriptor)node.Tag).seasonNumber = seasonNumber;
                                 node.Nodes.Add(new TreeNode());
-                                tnode.Nodes.Add(node);
+                                AddNode(tnode,node);
                             }
                         }
                     }
@@ -436,7 +478,7 @@ namespace PlexWalk
 
                             }
                             while (reader.ReadToNextSibling("Part"));
-                            tnode.Nodes.Add(node);
+                            AddNode(tnode,node);
                         }
                     }
                 }
@@ -561,7 +603,7 @@ namespace PlexWalk
                                 }
                             }
                             while (reader.ReadToNextSibling("Part"));
-                            tnode.Nodes.Add(node);
+                            AddNode(tnode,node);
                         }
                     }
                 }
@@ -646,7 +688,7 @@ namespace PlexWalk
                                 node.Nodes.Add(subnode);
                             }
                             while (reader.ReadToNextSibling("Part"));
-                            tnode.Nodes.Add(node);
+                            AddNode(tnode,node);
                         }
                     }
                 }
@@ -734,6 +776,14 @@ namespace PlexWalk
             selected.Nodes.Clear();
             selected.Nodes.Add("");
             selected.Expand();
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            foreach (TreeNode n in plexTreeView.Nodes)
+            {
+                n.Expand();
+            }
         }
     }
 }
