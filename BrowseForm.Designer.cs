@@ -46,7 +46,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.plexTreeView.ContextMenuStrip = this.contextMenuStrip1;
             this.plexTreeView.Location = new System.Drawing.Point(13, 31);
-            this.plexTreeView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.plexTreeView.Margin = new System.Windows.Forms.Padding(4);
             this.plexTreeView.Name = "plexTreeView";
             this.plexTreeView.Size = new System.Drawing.Size(488, 453);
             this.plexTreeView.TabIndex = 0;
@@ -88,6 +88,7 @@
             this.toolStripButton1.Name = "toolStripButton1";
             this.toolStripButton1.Size = new System.Drawing.Size(24, 24);
             this.toolStripButton1.Text = "toolStripButton1";
+            this.toolStripButton1.ToolTipText = "Expand all";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // BrowseForm
@@ -97,7 +98,7 @@
             this.ClientSize = new System.Drawing.Size(514, 497);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.plexTreeView);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "BrowseForm";
             this.Text = "Server List";
             this.Load += new System.EventHandler(this.BrowseForm_Load);

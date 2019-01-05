@@ -700,6 +700,13 @@ namespace PlexWalk
                 }
                 #endregion
             }
+            if (tnode.Name == libraryBasePath)
+            {
+                var node = new TreeNode("Search") { Tag = tnode.Tag, Name = "/search" };
+                ((Descriptor)node.Tag).isSearchNode = true;
+                node.Nodes.Add(new TreeNode());
+                AddNode(tnode, node);
+            }
         }
         private static string MakeValidFileName(string name)
         {
