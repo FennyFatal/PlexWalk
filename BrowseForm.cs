@@ -657,6 +657,7 @@ namespace PlexWalk
         {
             if (name == null)
                 return name;
+            name = name.Substring(name.LastIndexOfAny("\\/".ToCharArray())+1);
             string invalidChars = System.Text.RegularExpressions.Regex.Escape(new string(System.IO.Path.GetInvalidFileNameChars()));
             string invalidRegStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", invalidChars);
 
