@@ -41,10 +41,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.plexTreeView.ContextMenuStrip = this.contextMenuStrip1;
-            this.plexTreeView.Location = new System.Drawing.Point(20, 20);
-            this.plexTreeView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.plexTreeView.Location = new System.Drawing.Point(18, 16);
+            this.plexTreeView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.plexTreeView.Name = "plexTreeView";
-            this.plexTreeView.Size = new System.Drawing.Size(386, 362);
+            this.plexTreeView.Size = new System.Drawing.Size(344, 290);
             this.plexTreeView.TabIndex = 0;
             this.plexTreeView.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView1_BeforeExpand);
             this.plexTreeView.DoubleClick += new System.EventHandler(this.treeView1_DoubleClick);
@@ -56,24 +56,24 @@
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.refreshToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(156, 34);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(128, 28);
             // 
             // refreshToolStripMenuItem
             // 
             this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(211, 30);
+            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(127, 24);
             this.refreshToolStripMenuItem.Text = "Refresh";
             this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
             // 
             // BrowseForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(426, 403);
+            this.ClientSize = new System.Drawing.Size(379, 322);
             this.Controls.Add(this.plexTreeView);
-            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "BrowseForm";
-            this.Text = "cont";
+            this.Text = "Server List";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
