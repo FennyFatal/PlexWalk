@@ -45,6 +45,7 @@ namespace PlexWalk
             if (Autostart)
                 StartDownloads();
         }
+
         private void StartDownloads()
         {
             if (path == null)
@@ -57,7 +58,7 @@ namespace PlexWalk
             {
                 Client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(delegate(object sender, DownloadProgressChangedEventArgs e)
                 {
-                    this.progressBar1.Value = e.ProgressPercentage;
+                    SetProgress(this.progressBar1, e.ProgressPercentage);
                 });
 
                 Client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler
