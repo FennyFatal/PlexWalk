@@ -863,9 +863,10 @@ namespace PlexWalk
 
         private void Search_Click_1(object sender, EventArgs e)
         {
-            Search myNewForm = new Search();
-            myNewForm.ShowDialog();
-
+            MessageBox.Show("Coming Soon");
+            //Search myNewForm = new Search();
+            //myNewForm.ShowDialog();
+            //TODO: Create SearchResults window.
         }
 
         private void Refresh_Click(object sender, EventArgs e)
