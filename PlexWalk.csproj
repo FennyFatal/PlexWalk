@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>ico.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -58,6 +61,7 @@
       <DependentUpon>DownloadDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="DownloadInfo.cs" />
+    <Compile Include="iTalk Theme.cs" />
     <Compile Include="SearchDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -108,6 +112,15 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\DataSources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Resources\exit.png" />
+    <None Include="Properties\Resources\login.png" />
+    <None Include="Properties\Resources\refresh.png" />
+    <None Include="Properties\Resources\search.png" />
+    <None Include="Properties\Resources\start.png" />
+    <Content Include="ico.ico" />
+    <None Include="Properties\Resources\logo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
