@@ -35,11 +35,11 @@
             // 
             // textBox1
             // 
-            this.textBox1.ForeColor = System.Drawing.Color.White;
+            this.textBox1.ForeColor = System.Drawing.Color.Black;
             this.textBox1.Location = new System.Drawing.Point(11, 10);
             this.textBox1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(273, 23);
+            this.textBox1.Size = new System.Drawing.Size(273, 27);
             this.textBox1.TabIndex = 0;
             this.textBox1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyUp);
             // 
@@ -56,7 +56,7 @@
             // 
             // Search
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(43)))), ((int)(((byte)(48)))), ((int)(((byte)(52)))));
             this.ClientSize = new System.Drawing.Size(355, 44);
