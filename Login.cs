@@ -14,7 +14,7 @@ namespace PlexWalk
     {
         public ICredentials creds;
         public string headerAuth;
-        
+
         public Login()
         {
             InitializeComponent();
@@ -35,8 +35,36 @@ namespace PlexWalk
 
         private void field_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode ==Keys.Enter)
+            if (e.KeyCode == Keys.Enter)
                 acceptCreds();
+        }
+
+        private void xmlbox_Checked(object sender, EventArgs e)
+        {
+            if (((CheckBox)sender).Checked)
+            {
+                xmlurl.Visible = true;
+                lblUN.Visible = false;
+                lblPW.Visible = false;
+                username.Visible = false;
+                password.Visible = false;
+                username.Enabled = false;
+                password.Enabled = false;
+                xmltext1.Visible = false;
+                xmltext2.Visible = true;
+            }
+            else
+            {
+                xmlurl.Visible = false;
+                lblUN.Visible = true;
+                lblPW.Visible = true;
+                username.Visible = true;
+                password.Visible = true;
+                username.Enabled = true;
+                password.Enabled = true;
+                xmltext1.Visible = true;
+                xmltext2.Visible = false;
+            }
         }
     }
 }

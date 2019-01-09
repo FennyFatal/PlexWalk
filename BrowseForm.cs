@@ -75,7 +75,7 @@ namespace PlexWalk
             if (args.Length > 0)
                 parseArgs(args);
         }
-        private Dictionary<string,string> args = new Dictionary<string,string>();
+        private Dictionary<string, string> args = new Dictionary<string, string>();
 
         private void parseArgs(string[] args)
         {
@@ -137,19 +137,19 @@ namespace PlexWalk
                     if (!reader.MoveToAttribute("name"))
                         continue;
                     name = reader.ReadContentAsString();
-                    
+
                     if (!reader.MoveToAttribute("address"))
                         continue;
                     address = reader.ReadContentAsString();
-                    
+
                     if (!reader.MoveToAttribute("port"))
                         continue;
                     port = reader.ReadContentAsInt();
-                    
+
                     if (!reader.MoveToAttribute("scheme"))
                         continue;
                     scheme = reader.ReadContentAsString();
-                    
+
                     if (reader.MoveToAttribute("accessToken"))
                     {
                         accessToken = reader.ReadContentAsString();
@@ -162,7 +162,7 @@ namespace PlexWalk
                     }
                     if (reader.MoveToAttribute("owned") && reader.ReadContentAsString() == "1")
                         basepath = ownedPath;
-                    
+
                     TreeNode node = new TreeNode(name);
                     node.Tag = new Descriptor(String.Format("{0}://{1}:{2}", scheme, address, port), accessToken);
                     node.Name = basepath;
@@ -174,7 +174,7 @@ namespace PlexWalk
         }
         private void BrowseForm_Load(object sender, EventArgs e)
         {
-        Descriptor.GUID = Guid.NewGuid().ToString();
+            Descriptor.GUID = Guid.NewGuid().ToString();
             using (WebClient wc = new System.Net.WebClient())
             {
                 if (args.ContainsKey("owned_path"))
@@ -185,7 +185,7 @@ namespace PlexWalk
                 if (args.ContainsKey("server_xml"))
                 {
                     noToken = false;
-                    parseME = wc.DownloadString(args["server_xml"].Replace("\"",""));
+                    parseME = wc.DownloadString(args["server_xml"].Replace("\"", ""));
                 }
                 else if (args.ContainsKey("token"))
                 {
@@ -264,7 +264,7 @@ namespace PlexWalk
         }
         private void treeView1_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
-            ThreadPool.QueueUserWorkItem(delegate(object state)
+            ThreadPool.QueueUserWorkItem(delegate (object state)
             {
                 object[] array = state as object[];
                 TreeNode src = (TreeNode)array[0];
@@ -279,7 +279,7 @@ namespace PlexWalk
                     {
                     }
                 }
-            } , new object[] { e.Node });
+            }, new object[] { e.Node });
         }
 
         delegate void ChangeNodeCallback(object sender, TreeNode src);
@@ -329,16 +329,16 @@ namespace PlexWalk
                     Search dialog = new Search();
                     if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                     {
-                        query = String.Format("query={0}",Uri.EscapeDataString(dialog.query));
+                        query = String.Format("query={0}", Uri.EscapeDataString(dialog.query));
                     }
                 }
-                string url = ((Descriptor)tnode.Tag).host + tnode.Name + (!tnode.Name.Contains("?") ? '?' : '&') + query + (query.Equals(string.Empty)? "" : "&") + ((Descriptor)tnode.Tag).token;
+                string url = ((Descriptor)tnode.Tag).host + tnode.Name + (!tnode.Name.Contains("?") ? '?' : '&') + query + (query.Equals(string.Empty) ? "" : "&") + ((Descriptor)tnode.Tag).token;
                 Console.WriteLine(url);
                 try
                 {
                     xmlString = wc.DownloadString(url);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex.ToString());
                     return;
@@ -412,7 +412,7 @@ namespace PlexWalk
                                 if (seasonNumber != null)
                                     ((Descriptor)node.Tag).seasonNumber = seasonNumber;
                                 node.Nodes.Add(new TreeNode());
-                                AddNode(tnode,node);
+                                AddNode(tnode, node);
                             }
                         }
                     }
@@ -444,28 +444,31 @@ namespace PlexWalk
 
                             int width = -1;
                             int height = -1;
+                            int size = -1;
                             bool isIndirect = false;
-                            
+
                             if (reader.MoveToAttribute("width"))
                                 width = reader.ReadContentAsInt();
                             if (reader.MoveToAttribute("height"))
+                                height = reader.ReadContentAsInt();
+                            if (reader.MoveToAttribute("size"))
                                 height = reader.ReadContentAsInt();
                             if (reader.MoveToAttribute("indirect"))
                                 isIndirect = reader.ReadContentAsInt() == 1;
 
                             if (!reader.ReadToFollowing("Part"))
                                 continue;
-                            do 
+                            do
                             {
                                 if (!reader.MoveToAttribute("key"))
                                     continue;
 
                                 key = reader.ReadContentAsString();
                                 string container = String.Empty;
-                                
+
                                 if (reader.MoveToAttribute("container"))
                                     container = reader.ReadContentAsString();
-                                
+
                                 if (!reader.MoveToAttribute("file"))
                                     continue;
 
@@ -474,7 +477,7 @@ namespace PlexWalk
                                 Tag.downloadFilename = Tag.downloadFullpath.Substring(Tag.downloadFullpath.LastIndexOf("/") + 1);
                                 if (Tag.downloadFilename == String.Empty)
                                     Tag.downloadFilename = String.Format("{0}.{1}", title, container);
-                                title = String.Format("Download {0} ({1}x{2})", Tag.downloadFilename, width, height);
+                                title = String.Format("Download {0} ({1}x{2}) {3}", Tag.downloadFilename, width, height, size);
                                 TreeNode subnode = new TreeNode(title);
                                 Tag.downloadUrl = key.StartsWith("/") ? key : (string)tnode.Name + '/' + key;
                                 Tag.canDownload = true;
@@ -484,7 +487,7 @@ namespace PlexWalk
 
                             }
                             while (reader.ReadToNextSibling("Part"));
-                            AddNode(tnode,node);
+                            AddNode(tnode, node);
                         }
                     }
                 }
@@ -531,13 +534,16 @@ namespace PlexWalk
                             ((Descriptor)node.Tag).episodeNumber = episodeNumber;
                             if (!reader.ReadToFollowing("Media"))
                                 continue;
-                                
+
                             int width = -1;
                             int height = -1;
+                            int size = -1;
                             bool isIndirect = false;
                             if (reader.MoveToAttribute("width"))
                                 width = reader.ReadContentAsInt();
                             if (reader.MoveToAttribute("height"))
+                                height = reader.ReadContentAsInt();
+                            if (reader.MoveToAttribute("size"))
                                 height = reader.ReadContentAsInt();
                             if (reader.MoveToAttribute("indirect"))
                                 isIndirect = reader.ReadContentAsInt() == 1;
@@ -586,7 +592,7 @@ namespace PlexWalk
                                         else
                                             Tag.downloadFilename = String.Format("{0}.{1}", tnode.Text, container);
                                     }
-                                    title = String.Format("Download {0} ({1}x{2})", Tag.downloadFilename, width, height);
+                                    title = String.Format("Download {0} ({1}x{2})", Tag.downloadFilename, width, height, size);
                                     if (Tag.ShowTitle != null && Tag.episodeNumber != null)
                                     {
                                         if (Tag.seasonNumber != null)
@@ -609,7 +615,7 @@ namespace PlexWalk
                                 }
                             }
                             while (reader.ReadToNextSibling("Part"));
-                            AddNode(tnode,node);
+                            AddNode(tnode, node);
                         }
                     }
                 }
@@ -642,11 +648,11 @@ namespace PlexWalk
                             }
                             if (reader.MoveToAttribute("parentTitle"))
                                 album = reader.ReadContentAsString();
-                            
+
                             TreeNode node = new TreeNode(title);
                             node.Name = key.StartsWith("/") ? key : (string)tnode.Name + '/' + key;
                             node.Tag = tnode.Tag;
-                            
+
                             if (!reader.ReadToFollowing("Media"))
                                 continue;
                             int duration = -1;
@@ -667,19 +673,19 @@ namespace PlexWalk
                                     container = reader.ReadContentAsString();
                                 if (!reader.MoveToAttribute("file"))
                                     continue;
-                                    
+
                                 Descriptor Tag = new Descriptor((((Descriptor)tnode.Tag).host), ((Descriptor)tnode.Tag).token);
                                 Tag.downloadFullpath = reader.ReadContentAsString();
                                 Tag.downloadFilename = Tag.downloadFullpath.Substring(Tag.downloadFullpath.LastIndexOf("/") + 1);
-                                
+
                                 if (Tag.downloadFilename == String.Empty)
                                     Tag.downloadFilename = String.Format("{0}.{1}", title, container);
-                                
+
                                 if (duration > 0)
                                     title = String.Format("Download {0} ({1})", Tag.downloadFilename, duration);
                                 else
                                     title = String.Format("Download {0}", Tag.downloadFilename);
-                                
+
                                 if (album != null)
                                     if (artist != null)
                                         Tag.subdir = String.Format("{0} - {1}", artist, album);
@@ -694,7 +700,7 @@ namespace PlexWalk
                                 node.Nodes.Add(subnode);
                             }
                             while (reader.ReadToNextSibling("Part"));
-                            AddNode(tnode,node);
+                            AddNode(tnode, node);
                         }
                     }
                 }
@@ -712,7 +718,7 @@ namespace PlexWalk
         {
             if (name == null)
                 return name;
-            name = name.Substring(name.LastIndexOfAny("\\/".ToCharArray())+1);
+            name = name.Substring(name.LastIndexOfAny("\\/".ToCharArray()) + 1);
             string invalidChars = System.Text.RegularExpressions.Regex.Escape(new string(System.IO.Path.GetInvalidFileNameChars()));
             string invalidRegStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", invalidChars);
 
@@ -783,7 +789,7 @@ namespace PlexWalk
                 contextMenuStrip1.Show();
         }
 
-        private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RefreshToolStripMenuItem_Click(object sender, EventArgs e)
         {
             selected.Collapse(false);
             selected.Nodes.Clear();
@@ -797,6 +803,12 @@ namespace PlexWalk
             {
                 n.Expand();
             }
+        }
+
+        private void Search_Click_1(object sender, EventArgs e)
+        {
+            Search myNewForm = new Search();
+            myNewForm.Show();
         }
     }
 }
