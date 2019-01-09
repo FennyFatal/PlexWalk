@@ -31,6 +31,7 @@ namespace PlexWalk
         static TreeNode selected = null;
         public class Descriptor
         {
+            public static string sourceXmlUrl;
             public bool isSearchNode;
             public static string GUID;
             public static string myToken;
@@ -223,6 +224,7 @@ namespace PlexWalk
                 {
                     result = wc.DownloadString(server_xml);
                     method = RefreshMethod.ServerXmlUrl;
+                    Descriptor.sourceXmlUrl = server_xml;
                 }
                 catch
                 {
@@ -868,7 +870,17 @@ namespace PlexWalk
 
         private void Refresh_Click(object sender, EventArgs e)
         {
-
+            switch(method)
+            {
+                case RefreshMethod.Login: 
+                case RefreshMethod.LoginCLI:
+                case RefreshMethod.Token:
+                    loadServerNodesFromXML(doTokenLogin(Descriptor.myToken));
+                    break;
+                case RefreshMethod.ServerXmlUrl:
+                    loadServerNodesFromXML(doServerXmlLogin(Descriptor.sourceXmlUrl));
+                    break;
+            }
         }
     }
 }
