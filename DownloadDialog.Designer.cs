@@ -34,11 +34,11 @@
             this.removeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.DownloadList = new System.Windows.Forms.ListBox();
-            this.progressBar2 = new System.Windows.Forms.ProgressBar();
             this.ExitButton = new System.Windows.Forms.Button();
             this.StartButton = new System.Windows.Forms.Button();
-            this.progressBar4 = new iTalk.iTalk_ProgressBar();
-            this.progressBar3 = new iTalk.iTalk_ProgressBar();
+            this.Speed = new System.Windows.Forms.Label();
+            this.OverallProgress = new iTalk.iTalk_ProgressBar();
+            this.CurrentProgress = new iTalk.iTalk_ProgressBar();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,7 +49,6 @@
             this.removeToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(118, 26);
-            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // removeToolStripMenuItem
             // 
@@ -86,15 +85,6 @@
             this.DownloadList.Size = new System.Drawing.Size(387, 255);
             this.DownloadList.TabIndex = 2;
             // 
-            // progressBar2
-            // 
-            this.progressBar2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar2.Location = new System.Drawing.Point(142, 326);
-            this.progressBar2.Name = "progressBar2";
-            this.progressBar2.Size = new System.Drawing.Size(109, 27);
-            this.progressBar2.TabIndex = 1;
-            // 
             // ExitButton
             // 
             this.ExitButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
@@ -121,35 +111,46 @@
             this.StartButton.UseVisualStyleBackColor = true;
             this.StartButton.Click += new System.EventHandler(this.Start_Click);
             // 
-            // progressBar4
+            // Speed
             // 
-            this.progressBar4.Font = new System.Drawing.Font("Segoe UI", 15F);
-            this.progressBar4.Location = new System.Drawing.Point(257, 281);
-            this.progressBar4.Maximum = ((long)(100));
-            this.progressBar4.MinimumSize = new System.Drawing.Size(117, 115);
-            this.progressBar4.Name = "progressBar4";
-            this.progressBar4.ProgressColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            this.progressBar4.ProgressColor2 = System.Drawing.Color.Yellow;
-            this.progressBar4.ProgressShape = iTalk.iTalk_ProgressBar._ProgressShape.Round;
-            this.progressBar4.Size = new System.Drawing.Size(117, 117);
-            this.progressBar4.TabIndex = 12;
-            this.progressBar4.Text = "iTalk_ProgressBar1";
-            this.progressBar4.Value = ((long)(0));
+            this.Speed.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Speed.ForeColor = System.Drawing.Color.White;
+            this.Speed.Location = new System.Drawing.Point(0, 378);
+            this.Speed.Name = "Speed";
+            this.Speed.Size = new System.Drawing.Size(387, 19);
+            this.Speed.TabIndex = 13;
+            this.Speed.Text = "Speed";
+            this.Speed.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // progressBar3
+            // OverallProgress
             // 
-            this.progressBar3.Font = new System.Drawing.Font("Segoe UI", 15F);
-            this.progressBar3.Location = new System.Drawing.Point(19, 281);
-            this.progressBar3.Maximum = ((long)(100));
-            this.progressBar3.MinimumSize = new System.Drawing.Size(117, 115);
-            this.progressBar3.Name = "progressBar3";
-            this.progressBar3.ProgressColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            this.progressBar3.ProgressColor2 = System.Drawing.Color.Yellow;
-            this.progressBar3.ProgressShape = iTalk.iTalk_ProgressBar._ProgressShape.Round;
-            this.progressBar3.Size = new System.Drawing.Size(117, 117);
-            this.progressBar3.TabIndex = 11;
-            this.progressBar3.Text = "progressBar3";
-            this.progressBar3.Value = ((long)(0));
+            this.OverallProgress.Font = new System.Drawing.Font("Segoe UI", 15F);
+            this.OverallProgress.Location = new System.Drawing.Point(257, 281);
+            this.OverallProgress.Maximum = ((long)(100));
+            this.OverallProgress.MinimumSize = new System.Drawing.Size(117, 115);
+            this.OverallProgress.Name = "OverallProgress";
+            this.OverallProgress.ProgressColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.OverallProgress.ProgressColor2 = System.Drawing.Color.Yellow;
+            this.OverallProgress.ProgressShape = iTalk.iTalk_ProgressBar._ProgressShape.Round;
+            this.OverallProgress.Size = new System.Drawing.Size(117, 117);
+            this.OverallProgress.TabIndex = 12;
+            this.OverallProgress.Text = "iTalk_ProgressBar1";
+            this.OverallProgress.Value = ((long)(0));
+            // 
+            // CurrentProgress
+            // 
+            this.CurrentProgress.Font = new System.Drawing.Font("Segoe UI", 15F);
+            this.CurrentProgress.Location = new System.Drawing.Point(19, 281);
+            this.CurrentProgress.Maximum = ((long)(100));
+            this.CurrentProgress.MinimumSize = new System.Drawing.Size(117, 115);
+            this.CurrentProgress.Name = "CurrentProgress";
+            this.CurrentProgress.ProgressColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.CurrentProgress.ProgressColor2 = System.Drawing.Color.Yellow;
+            this.CurrentProgress.ProgressShape = iTalk.iTalk_ProgressBar._ProgressShape.Round;
+            this.CurrentProgress.Size = new System.Drawing.Size(117, 117);
+            this.CurrentProgress.TabIndex = 11;
+            this.CurrentProgress.Text = "progressBar3";
+            this.CurrentProgress.Value = ((long)(0));
             // 
             // DownloadDialog
             // 
@@ -157,13 +158,13 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(43)))), ((int)(((byte)(48)))), ((int)(((byte)(52)))));
             this.ClientSize = new System.Drawing.Size(388, 445);
-            this.Controls.Add(this.progressBar4);
-            this.Controls.Add(this.progressBar3);
+            this.Controls.Add(this.OverallProgress);
+            this.Controls.Add(this.CurrentProgress);
             this.Controls.Add(this.ExitButton);
             this.Controls.Add(this.StartButton);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.DownloadList);
-            this.Controls.Add(this.progressBar2);
+            this.Controls.Add(this.Speed);
             this.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -183,10 +184,10 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem removeToolStripMenuItem;
         private System.Windows.Forms.ListBox DownloadList;
-        private System.Windows.Forms.ProgressBar progressBar2;
-        private iTalk.iTalk_ProgressBar progressBar3;
+        private iTalk.iTalk_ProgressBar CurrentProgress;
         private System.Windows.Forms.Button ExitButton;
         private System.Windows.Forms.Button StartButton;
-        private iTalk.iTalk_ProgressBar progressBar4;
+        private iTalk.iTalk_ProgressBar OverallProgress;
+        private System.Windows.Forms.Label Speed;
     }
 }

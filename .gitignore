@@ -187,3 +187,7 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+.vs/PlexWalk/v15/Server/sqlite3/db.lock
+.vs/PlexWalk/v15/Server/sqlite3/storage.ide
+.vs/PlexWalk/v15/Server/sqlite3/storage.ide-shm
+.vs/PlexWalk/v15/Server/sqlite3/storage.ide-wal

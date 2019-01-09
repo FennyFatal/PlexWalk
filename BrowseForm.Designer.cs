@@ -64,12 +64,12 @@
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.refreshToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(114, 26);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(128, 28);
             // 
             // refreshToolStripMenuItem
             // 
             this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(127, 24);
             this.refreshToolStripMenuItem.Text = "Refresh";
             this.refreshToolStripMenuItem.Click += new System.EventHandler(this.RefreshToolStripMenuItem_Click);
             // 
@@ -97,7 +97,7 @@
             this.Expand.Size = new System.Drawing.Size(24, 24);
             this.Expand.Text = "toolStripButton1";
             this.Expand.ToolTipText = "Expand all";
-            this.Expand.Click += new System.EventHandler(this.toolStripButton1_Click);
+            this.Expand.Click += new System.EventHandler(this.ExpandServers_Click);
             // 
             // Refresh
             // 
@@ -108,6 +108,7 @@
             this.Refresh.Size = new System.Drawing.Size(24, 24);
             this.Refresh.Text = "toolStripButton2";
             this.Refresh.ToolTipText = "Refresh";
+            this.Refresh.Click += new System.EventHandler(this.Refresh_Click);
             // 
             // Search
             // 
@@ -121,7 +122,7 @@
             // 
             // BrowseForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(43)))), ((int)(((byte)(48)))), ((int)(((byte)(52)))));
             this.ClientSize = new System.Drawing.Size(565, 532);
