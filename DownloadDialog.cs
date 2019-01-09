@@ -53,13 +53,14 @@ namespace PlexWalk
                 Close();
                 return;
             }
+            this.progressBar4.Maximum = myDownloadInfo.Count() * 100;
             this.progressBar2.Maximum = myDownloadInfo.Count() + 1;
             using (WebClient Client = new WebClient())
             {
                 Client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(delegate (object sender, DownloadProgressChangedEventArgs e)
                 {
                     SetProgressCircle(this.progressBar3, e.ProgressPercentage);
-                    SetProgressCircle(this.progressBar4, e.ProgressPercentage);
+                    SetProgressCircle(this.progressBar4, e.ProgressPercentage + (int)progressBar4.Value - ((int)progressBar4.Value % 100));
                 });
 
                 Client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler
@@ -218,6 +219,7 @@ namespace PlexWalk
             while (myDownloadInfo.Any())
             {
                 SetProgress(progressBar2, progressBar2.Maximum - myDownloadInfo.Count);
+                SetProgressCircle(progressBar4, ((int)progressBar4.Maximum - (myDownloadInfo.Count * 100)));
                 DownloadInfo di = deQueue();
                 SetText(label1, di.downloadFile);
                 makeSureExists(path + (di.subdir == null ? "\\" : "\\" + di.subdir + "\\"));
