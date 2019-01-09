@@ -17,6 +17,14 @@ namespace PlexWalk
 {
     public partial class BrowseForm : Form
     {
+        private enum RefreshMethod
+        {
+            ServerXmlUrl,
+            Login,
+            LoginCLI,
+            Token,
+        };
+        private RefreshMethod method;
         private DownloadDialog downloadDialog = null;
         const string libraryBasePath = "/library/sections";
         string ownedPath = libraryBasePath;
@@ -67,8 +75,6 @@ namespace PlexWalk
                 return host + downloadUrl + (token != "" ? (!downloadUrl.Contains("?") ? '?' : '&') + token : "");
             }
         }
-        public string parseME;
-        public string authME;
         public BrowseForm(string[] args)
         {
             InitializeComponent();
@@ -174,73 +180,28 @@ namespace PlexWalk
         }
         private void BrowseForm_Load(object sender, EventArgs e)
         {
+            string parseME = null;
+            bool normal_login = true;
+            
             Descriptor.GUID = Guid.NewGuid().ToString();
-            using (WebClient wc = new System.Net.WebClient())
-            {
-                if (args.ContainsKey("owned_path"))
-                {
-                    ownedPath = args["owned_path"];
-                }
-                bool noToken = true;
-                if (args.ContainsKey("server_xml"))
-                {
-                    noToken = false;
-                    parseME = wc.DownloadString(args["server_xml"].Replace("\"", ""));
-                }
-                else if (args.ContainsKey("token"))
-                {
-                    noToken = false;
-                    Descriptor.myToken = args["token"];
-                    try
-                    {
-                        parseME = wc.DownloadString("https://plex.tv/pms/servers.xml" + "?X-Plex-Token=" + args["token"]);
-                    }
-                    catch
-                    {
-                        noToken = true;
-                    }
-                }
-                if (noToken)
-                {
-                    Boolean fail = false;
-                    do
-                    {
-                        try
-                        {
-                            if (!fail && args.ContainsKey("username") && args.ContainsKey("password"))
-                            {
-                                wc.Credentials = new NetworkCredential(args["username"], args["password"]);
-                                wc.Headers[HttpRequestHeader.Authorization] = string.Format(
-                                    "Basic {0}",
-                                    Convert.ToBase64String(Encoding.ASCII.GetBytes(args["username"] + ":" + args["password"]))
-                                );
 
-                            }
-                            else
-                            {
-                                Login loginform = new Login();
-                                loginform.ShowDialog();
-                                if (loginform.DialogResult == System.Windows.Forms.DialogResult.Cancel)
-                                {
-                                    this.Close();
-                                    return;
-                                }
-                                wc.Credentials = loginform.creds;
-                                wc.Headers[HttpRequestHeader.Authorization] = string.Format("Basic {0}", loginform.headerAuth);
-                            }
-                            parseME = wc.DownloadString("https://plex.tv/pms/servers.xml");
-                            wc.Headers["X-Plex-Client-Identifier"] = Descriptor.GUID;
-                            authME = wc.UploadString("https://plex.tv/users/sign_in.xml", String.Empty);
-                            fail = false;
-                        }
-                        catch (Exception ex)
-                        {
-                            fail = true;
-                        }
-                    } while (fail);
-                    Descriptor.myToken = parseLogin(authME);
-                }
-            }
+            if (args.ContainsKey("owned_path"))
+                ownedPath = args["owned_path"];
+                
+            if (args.ContainsKey("server_xml"))
+                parseME = doServerXmlLogin(args["server_xml"].Replace("\"", ""));
+            else if (args.ContainsKey("token"))
+                parseME = doTokenLogin(args["token"]);
+
+            if (parseME == null)
+                parseME = doMetaLogin();
+
+            loadServerNodesFromXML(parseME);
+        }
+
+        private void loadServerNodesFromXML(string parseME)
+        {
+            plexTreeView.Nodes.Clear();
             foreach (TreeNode tn in parseServers(parseME))
             {
                 plexTreeView.Nodes.Add(tn);
@@ -251,6 +212,99 @@ namespace PlexWalk
                 }
                 catch { }
             }
+        }
+
+        private string doServerXmlLogin(string server_xml)
+        {
+            using (WebClient wc = new System.Net.WebClient())
+            {
+                string result;
+                try
+                {
+                    result = wc.DownloadString(server_xml);
+                    method = RefreshMethod.ServerXmlUrl;
+                }
+                catch
+                {
+                    return null;
+                }
+                return result;
+            }
+        }
+
+        private string doTokenLogin(string token)
+        {
+            using (WebClient wc = new System.Net.WebClient())
+            {
+                string result;
+                Descriptor.myToken = token;
+                try
+                {
+                    result = wc.DownloadString("https://plex.tv/pms/servers.xml" + "?X-Plex-Token=" + Descriptor.myToken);
+                    method = RefreshMethod.Token;
+                }
+                catch
+                {
+                    return null;
+                }
+                return result;
+            }
+        }
+
+        private string doMetaLogin()
+        {
+            using (WebClient wc = new System.Net.WebClient())
+            {
+                string parseME = null;
+                Boolean fail = false;
+                do
+                {
+                    try
+                    {
+                        if (!fail && args.ContainsKey("username") && args.ContainsKey("password"))
+                        {
+                            doLoginFromCLI(wc);
+                        }
+                        else
+                        {
+                            doLogin(wc);
+                        }
+                        parseME = wc.DownloadString("https://plex.tv/pms/servers.xml");
+                        wc.Headers["X-Plex-Client-Identifier"] = Descriptor.GUID;
+                        Descriptor.myToken = parseLogin(wc.UploadString("https://plex.tv/users/sign_in.xml", String.Empty));
+                        fail = false;
+                    }
+                    catch (Exception ex)
+                    {
+                        fail = true;
+                    }
+                } while (fail);
+                return parseME;
+            }
+        }
+
+        private void doLoginFromCLI(WebClient wc)
+        {
+            wc.Credentials = new NetworkCredential(args["username"], args["password"]);
+            wc.Headers[HttpRequestHeader.Authorization] = string.Format(
+                "Basic {0}",
+                Convert.ToBase64String(Encoding.ASCII.GetBytes(args["username"] + ":" + args["password"]))
+            );
+            method = RefreshMethod.LoginCLI;
+        }
+
+        private void doLogin(WebClient wc)
+        {
+            Login loginform = new Login();
+            loginform.ShowDialog();
+            if (loginform.DialogResult == System.Windows.Forms.DialogResult.Cancel)
+            {
+                this.Close();
+                return;
+            }
+            wc.Credentials = loginform.creds;
+            wc.Headers[HttpRequestHeader.Authorization] = string.Format("Basic {0}", loginform.headerAuth);
+            method = RefreshMethod.Login;
         }
 
         private string parseLogin(string login_xml)
@@ -797,7 +851,7 @@ namespace PlexWalk
             selected.Expand();
         }
 
-        private void toolStripButton1_Click(object sender, EventArgs e)
+        private void ExpandServers_Click(object sender, EventArgs e)
         {
             foreach (TreeNode n in plexTreeView.Nodes)
             {
@@ -808,7 +862,13 @@ namespace PlexWalk
         private void Search_Click_1(object sender, EventArgs e)
         {
             Search myNewForm = new Search();
-            myNewForm.Show();
+            myNewForm.ShowDialog();
+
+        }
+
+        private void Refresh_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
