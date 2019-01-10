@@ -33,7 +33,6 @@
             this.plexTreeView = new System.Windows.Forms.TreeView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.playInVLCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.Expand = new System.Windows.Forms.ToolStripButton();
             this.Refresh = new System.Windows.Forms.ToolStripButton();
@@ -132,13 +131,6 @@
             this.Search.Size = new System.Drawing.Size(24, 24);
             this.Search.Text = "toolStripButton3";
             this.Search.Click += new System.EventHandler(this.Search_Click_1);
-            // 
-            // playInVLCToolStripMenuItem
-            // 
-            this.playInVLCToolStripMenuItem.Name = "playInVLCToolStripMenuItem";
-            this.playInVLCToolStripMenuItem.Size = new System.Drawing.Size(175, 24);
-            this.playInVLCToolStripMenuItem.Text = "Play in VLC";
-            this.playInVLCToolStripMenuItem.Click += new System.EventHandler(this.playInVLCToolStripMenuItem_Click);
             // 
             // downloadToolStripMenuItem
             // 
