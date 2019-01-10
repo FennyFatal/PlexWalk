@@ -192,7 +192,7 @@ namespace PlexWalk
                 var d = new SetProgressSpeedDelegate(SetProgressSpeed);
                 this.Invoke(d, new object[] { p, value });
             }
-                else { p.Text = value; }
+            else { p.Text = value; }
         }
         private void downloadM3u8(WebClient Client, DownloadInfo di)
         {
@@ -215,7 +215,7 @@ namespace PlexWalk
                     (delegate (object sender, DataReceivedEventArgs e)
                     {
 #pragma warning disable CS0642 // Possible mistaken empty statement
-                        if (e.Data == null);
+                        if (e.Data == null) ;
 #pragma warning restore CS0642 // Possible mistaken empty statement
                         else
                         {
