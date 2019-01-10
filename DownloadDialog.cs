@@ -40,11 +40,45 @@ namespace PlexWalk
             this.DownloadList.DataSource = myDownloadInfo;
         }
 
+        public static string FormatSize(double size)
+        {
+            size = size ;
+            const long BytesInKilobytes = 1024;
+            const long BytesInMegabytes = BytesInKilobytes * 1024;
+            const long BytesInGigabytes = BytesInMegabytes * 1024;
+            double value;
+            string str;
+            if (size < BytesInKilobytes)
+            {
+                value = size;
+                str = "B/s";
+            }
+            else if (size < BytesInMegabytes)
+            {
+                value = size / BytesInKilobytes;
+                str = "KB/s";
+            }
+            else if (size < BytesInGigabytes)
+            {
+                value = size / BytesInMegabytes;
+                str = "MB/s";
+            }
+            else
+            {
+                value = size / BytesInGigabytes;
+                str = "GB/s";
+            }
+            return $"{value:0.##} {str}";
+        }
+
         private void DownloadDialog_Load(object senderd, EventArgs e1)
         {
             if (Autostart)
                 StartDownloads();
         }
+
+        int lastTotal = 0;
+        DateTime lastTime = DateTime.Now;
 
         private void StartDownloads()
         {
@@ -53,16 +87,34 @@ namespace PlexWalk
                 Close();
                 return;
             }
-            this.progressBar4.Maximum = myDownloadInfo.Count() * 100;
-            this.progressBar2.Maximum = myDownloadInfo.Count() + 1;
+            this.OverallProgress.Maximum = myDownloadInfo.Count() * 100;
             using (WebClient Client = new WebClient())
             {
                 Client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(delegate (object sender, DownloadProgressChangedEventArgs e)
                 {
-                    SetProgressCircle(this.progressBar3, e.ProgressPercentage);
-                    SetProgressCircle(this.progressBar4, e.ProgressPercentage + (int)progressBar4.Value - ((int)progressBar4.Value % 100));
-                });
 
+                    if (lastTotal == 0)
+                    {
+                        lastTime = DateTime.Now;
+                        lastTotal = (int)(long)e.BytesReceived;
+                    }
+                    else
+                    {
+                        var now = DateTime.Now;
+                        var timeSpan = now - lastTime;
+                        if (timeSpan.Seconds == 0) return;
+                        var bytesChange = e.BytesReceived - lastTotal;
+                        var bytesPerSecond = bytesChange / timeSpan.Seconds;
+
+                        SetProgressSpeed(this.Speed, FormatSize(bytesPerSecond));
+                        SetProgressCircle(this.CurrentProgress, e.ProgressPercentage);
+                        SetProgressCircle(this.OverallProgress, e.ProgressPercentage + (int)OverallProgress.Value - ((int)OverallProgress.Value % 100));
+
+                        lastTime = DateTime.Now;
+                        lastTotal = (int)(long)e.BytesReceived;
+                    }
+
+                });
                 Client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler
                 (delegate (object sender, System.ComponentModel.AsyncCompletedEventArgs e)
                 {
@@ -144,6 +196,17 @@ namespace PlexWalk
                 catch { }
             }
         }
+        delegate void SetProgressSpeedDelegate(Label p, string value);
+        private void SetProgressSpeed(Label p, string value)
+        {
+            if (p.InvokeRequired)
+
+            {
+                var d = new SetProgressSpeedDelegate(SetProgressSpeed);
+                this.Invoke(d, new object[] { p, value });
+            }
+                else { p.Text = value; }
+        }
         private void downloadM3u8(WebClient Client, DownloadInfo di)
         {
             using (Process FFMPEGEncode = new Process()
@@ -164,16 +227,17 @@ namespace PlexWalk
                 FFMPEGEncode.ErrorDataReceived += new DataReceivedEventHandler
                     (delegate (object sender, DataReceivedEventArgs e)
                     {
-                        if (e.Data == null)
-                            ;
+#pragma warning disable CS0642 // Possible mistaken empty statement
+                        if (e.Data == null);
+#pragma warning restore CS0642 // Possible mistaken empty statement
                         else
                         {
                             if (DurationRegex.IsMatch(e.Data))
                             {
                                 var match = DurationRegex.Match(e.Data);
                                 Console.WriteLine("Matched: " + match.Groups[0]);
-                                SetProgressCircle(progressBar3, 0);
-                                SetProgressCircle(progressBar4, 0);
+                                SetProgressCircle(CurrentProgress, 0);
+                                SetProgressCircle(OverallProgress, 0);
                             }
 
                         }
@@ -218,8 +282,7 @@ namespace PlexWalk
         {
             while (myDownloadInfo.Any())
             {
-                SetProgress(progressBar2, progressBar2.Maximum - myDownloadInfo.Count);
-                SetProgressCircle(progressBar4, ((int)progressBar4.Maximum - (myDownloadInfo.Count * 100)));
+                SetProgressCircle(OverallProgress, ((int)OverallProgress.Maximum - (myDownloadInfo.Count * 100)));
                 DownloadInfo di = deQueue();
                 SetText(label1, di.downloadFile);
                 makeSureExists(path + (di.subdir == null ? "\\" : "\\" + di.subdir + "\\"));
@@ -301,11 +364,6 @@ namespace PlexWalk
             catch { }
         }
 
-        private void DownloadList_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void DownloadList_MouseUp(object sender, MouseEventArgs e)
         {
             ((ListBox)sender).SelectedIndex = ((ListBox)sender).IndexFromPoint(e.Location);
@@ -333,10 +391,6 @@ namespace PlexWalk
         private void removeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             myDownloadInfo.Remove((DownloadInfo)DownloadList.SelectedItem);
-        }
-        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
-        {
-
         }
     }
 }
