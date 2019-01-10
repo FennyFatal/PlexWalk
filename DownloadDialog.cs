@@ -257,7 +257,6 @@ namespace PlexWalk
         {
             while (myDownloadInfo.Any())
             {
-                lastTotal = 0;
                 SetProgressCircle(OverallProgress, ((int)OverallProgress.Maximum - (myDownloadInfo.Count * 100)));
                 DownloadInfo di = deQueue();
                 SetText(label1, di.downloadFile);
