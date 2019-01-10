@@ -185,12 +185,12 @@ namespace PlexWalk
         {
             string parseME = null;
             bool normal_login = true;
-            
+
             Descriptor.GUID = Guid.NewGuid().ToString();
 
             if (args.ContainsKey("owned_path"))
                 ownedPath = args["owned_path"];
-                
+
             if (args.ContainsKey("server_xml"))
                 parseME = doServerXmlLogin(args["server_xml"].Replace("\"", ""));
             else if (args.ContainsKey("token"))
@@ -789,6 +789,15 @@ namespace PlexWalk
                 Clipboard.SetText(getDownloadURL(plexTreeView.SelectedNode));
                 MessageBox.Show("URL Copied to clipboard");
             }
+            else
+            {
+                DownloadInfo[] di = getDownloads(plexTreeView.SelectedNode).Select(x => new DownloadInfo(x.getDownloadURL(), MakeValidFileName(x.downloadFilename), MakeValidFileName(x.subdir))).ToArray();
+                if (downloadDialog == null || downloadDialog.IsDisposed)
+                    downloadDialog = new DownloadDialog(di);
+                else
+                    downloadDialog.enqueue(di);
+                downloadDialog.Show();
+            }
         }
         private string getDownloadURL(TreeNode node)
         {
@@ -864,9 +873,9 @@ namespace PlexWalk
 
         private void Refresh_Click(object sender, EventArgs e)
         {
-            switch(method)
+            switch (method)
             {
-                case RefreshMethod.Login: 
+                case RefreshMethod.Login:
                 case RefreshMethod.LoginCLI:
                 case RefreshMethod.Token:
                     loadServerNodesFromXML(doTokenLogin(Descriptor.myToken));
@@ -879,26 +888,24 @@ namespace PlexWalk
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
-            if (selected != null)
-            {
-                playInVLCToolStripMenuItem.Visible = ((Descriptor)selected.Tag).canDownload;
-            }
+            playInVLCToolStripMenuItem.Visible = ((Descriptor)selected.Tag).canDownload;
         }
 
         private void playInVLCToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            ProcessStartInfo startInfo = new ProcessStartInfo();
             RegistryKey key = null;
             try
             {
-                key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\VideoLAN\VLC");
+                key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\VideoLAN\VLC\");
             }
             catch
             {
                 try
                 {
-                    key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\VideoLAN\VLC");
+                    key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\VideoLAN\VLC\");
                 }
-                catch 
+                catch
                 {
                     MessageBox.Show("Please install VLC to use this feature");
                 }
@@ -914,16 +921,6 @@ namespace PlexWalk
                     MessageBox.Show("Failed to launch VLC.");
                 }
             }
-        }
-
-        private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            DownloadInfo[] di = getDownloads(plexTreeView.SelectedNode).Select(x => new DownloadInfo(x.getDownloadURL(), MakeValidFileName(x.downloadFilename), MakeValidFileName(x.subdir))).ToArray();
-            if (downloadDialog == null || downloadDialog.IsDisposed)
-                downloadDialog = new DownloadDialog(di);
-            else
-                downloadDialog.enqueue(di);
-            downloadDialog.Show();
         }
     }
 }
