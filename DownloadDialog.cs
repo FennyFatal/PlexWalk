@@ -216,10 +216,7 @@ namespace PlexWalk
                 FFMPEGEncode.ErrorDataReceived += new DataReceivedEventHandler
                     (delegate (object sender, DataReceivedEventArgs e)
                     {
-#pragma warning disable CS0642 // Possible mistaken empty statement
-                        if (e.Data == null);
-#pragma warning restore CS0642 // Possible mistaken empty statement
-                        else
+                        if (e.Data != null)
                         {
                             if (DurationRegex.IsMatch(e.Data))
                             {
@@ -239,17 +236,6 @@ namespace PlexWalk
                     Application.DoEvents();
                 }
             }
-            /*
-            using (WebClient TSClient = new WebClient())
-            {
-                TSClient.DownloadStringCompleted += new DownloadStringCompletedEventHandler
-                (delegate(object sender, DownloadStringCompletedEventArgs e)
-                {
-                    downloadM3u8(e.Result, (DownloadInfo)e.UserState);
-                });
-                TSClient.DownloadStringAsync(new Uri(di.downloadURL), di);
-            }
-                */
         }
 
         delegate DownloadInfo deQueueDelegate();
@@ -293,57 +279,6 @@ namespace PlexWalk
             this.CloseForm();
             return;
         }
-        /*
-        BinaryWriter output;
-
-        private void downloadM3u8(string p, DownloadInfo downloadInfo)
-        {
-            using (WebClient M3u8Client = new WebClient())
-            {
-                output = new System.IO.BinaryWriter(File.OpenWrite(path + (downloadInfo.subdir == null ? "\\" : "\\" + downloadInfo.subdir + "\\") + downloadInfo.downloadFile));
-                {
-                    var downloadinfo = parseM3u8(p);
-                    this.progressBar1.Maximum = downloadinfo.Count;
-                    M3u8Client.DownloadDataCompleted += new DownloadDataCompletedEventHandler
-                    (delegate (object source, DownloadDataCompletedEventArgs e)
-                    {
-                        output.Write(e.Result);
-                        output.Flush();
-                        var remaining = (List<DownloadInfo>)e.UserState;
-                        if (remaining.Count > 0)
-                        {
-                            downloadNextM3u8ItemFromList(M3u8Client, downloadinfo);
-                        }
-                        else
-                        {
-                            output.Close();
-                            output.Dispose();
-                        }
-                    }
-                    );
-                    downloadNextM3u8ItemFromList(M3u8Client, downloadinfo);
-                }
-            }
-        }
-        private void downloadNextM3u8ItemFromList(WebClient M3u8Client, List<DownloadInfo> remaining)
-        {
-            this.progressBar1.Value = this.progressBar1.Maximum - remaining.Count;
-            var di = remaining.First();
-            remaining.Remove(di);
-            M3u8Client.DownloadDataAsync(new Uri(di.downloadURL), remaining);
-        }
-        private List<DownloadInfo> parseM3u8(string p)
-        {
-            ArrayList parts = new ArrayList();
-            foreach (string s in p.Split("\r\n".ToCharArray()))
-            {
-                Console.WriteLine(s);
-                if (s.StartsWith("http://") || s.StartsWith("https://"))
-                    parts.Add(new DownloadInfo(s,null,null));
-            }
-            return parts.Cast<DownloadInfo>().ToList();
-        }
-         */
         private void makeSureExists(string p)
         {
             try
