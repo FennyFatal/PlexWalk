@@ -65,10 +65,10 @@
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.refreshToolStripMenuItem,
-            this.playInVLCToolStripMenuItem,
-            this.downloadToolStripMenuItem});
+            this.downloadToolStripMenuItem,
+            this.playInVLCToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(176, 104);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(150, 76);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // refreshToolStripMenuItem
@@ -130,6 +130,7 @@
             this.playInVLCToolStripMenuItem.Name = "playInVLCToolStripMenuItem";
             this.playInVLCToolStripMenuItem.Size = new System.Drawing.Size(175, 24);
             this.playInVLCToolStripMenuItem.Text = "Play in VLC";
+            this.playInVLCToolStripMenuItem.Visible = false;
             this.playInVLCToolStripMenuItem.Click += new System.EventHandler(this.playInVLCToolStripMenuItem_Click);
             // 
             // downloadToolStripMenuItem
