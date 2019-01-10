@@ -789,15 +789,6 @@ namespace PlexWalk
                 Clipboard.SetText(getDownloadURL(plexTreeView.SelectedNode));
                 MessageBox.Show("URL Copied to clipboard");
             }
-            else
-            {
-                DownloadInfo[] di = getDownloads(plexTreeView.SelectedNode).Select(x => new DownloadInfo(x.getDownloadURL(), MakeValidFileName(x.downloadFilename), MakeValidFileName(x.subdir))).ToArray();
-                if (downloadDialog == null || downloadDialog.IsDisposed)
-                    downloadDialog = new DownloadDialog(di);
-                else
-                    downloadDialog.enqueue(di);
-                downloadDialog.Show();
-            }
         }
         private string getDownloadURL(TreeNode node)
         {
@@ -921,6 +912,16 @@ namespace PlexWalk
                     MessageBox.Show("Failed to launch VLC.");
                 }
             }
+        }
+
+        private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DownloadInfo[] di = getDownloads(plexTreeView.SelectedNode).Select(x => new DownloadInfo(x.getDownloadURL(), MakeValidFileName(x.downloadFilename), MakeValidFileName(x.subdir))).ToArray();
+            if (downloadDialog == null || downloadDialog.IsDisposed)
+                downloadDialog = new DownloadDialog(di);
+            else
+                downloadDialog.enqueue(di);
+            downloadDialog.Show();
         }
     }
 }
