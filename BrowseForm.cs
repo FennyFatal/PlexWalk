@@ -891,18 +891,18 @@ namespace PlexWalk
             RegistryKey key = null;
             try
             {
-                key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\VideoLAN\VLC\");
+                using (var lm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64))
+                {
+                    key = lm.OpenSubKey(@"SOFTWARE\VideoLAN\VLC\");
+                    if (key == null)
+                        key = lm.OpenSubKey(@"SOFTWARE\WOW6432Node\VideoLAN\VLC\");
+                    if (key == null)
+                        MessageBox.Show("Please install VLC to use this feature");
+                }
             }
             catch
             {
-                try
-                {
-                    key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\VideoLAN\VLC\");
-                }
-                catch
-                {
-                    MessageBox.Show("Please install VLC to use this feature");
-                }
+                MessageBox.Show("Failed to read from registry");
             }
             if (key != null)
             {
