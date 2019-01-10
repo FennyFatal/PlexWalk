@@ -893,17 +893,16 @@ namespace PlexWalk
 
         private void playInVLCToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo();
             RegistryKey key = null;
             try
             {
-                key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\VideoLAN\VLC\");
+                key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\VideoLAN\VLC");
             }
             catch
             {
                 try
                 {
-                    key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\VideoLAN\VLC\");
+                    key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\VideoLAN\VLC");
                 }
                 catch
                 {
@@ -921,6 +920,15 @@ namespace PlexWalk
                     MessageBox.Show("Failed to launch VLC.");
                 }
             }
+        }
+            private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DownloadInfo[] di = getDownloads(plexTreeView.SelectedNode).Select(x => new DownloadInfo(x.getDownloadURL(), MakeValidFileName(x.downloadFilename), MakeValidFileName(x.subdir))).ToArray();
+            if (downloadDialog == null || downloadDialog.IsDisposed)
+                downloadDialog = new DownloadDialog(di);
+            else
+                downloadDialog.enqueue(di);
+            downloadDialog.Show();
         }
     }
 }

@@ -42,33 +42,20 @@ namespace PlexWalk
 
         public static string FormatSize(double size)
         {
-            size = size ;
-            const long BytesInKilobytes = 1024;
-            const long BytesInMegabytes = BytesInKilobytes * 1024;
-            const long BytesInGigabytes = BytesInMegabytes * 1024;
-            double value;
-            string str;
-            if (size < BytesInKilobytes)
+            string[] suffix = new string[] { "B/s", "KB/s", "MB/s", "GB/s", "TB/s", "PB/s" };
+
+            double sdiv = 1.0;
+            int stype = 0;
+            for (int i = 0; i < 6; i++)
             {
-                value = size;
-                str = "B/s";
+                if ((size / sdiv) >= 1024)
+                {
+                    sdiv *= 1024;
+                    stype++;
+                }
             }
-            else if (size < BytesInMegabytes)
-            {
-                value = size / BytesInKilobytes;
-                str = "KB/s";
-            }
-            else if (size < BytesInGigabytes)
-            {
-                value = size / BytesInMegabytes;
-                str = "MB/s";
-            }
-            else
-            {
-                value = size / BytesInGigabytes;
-                str = "GB/s";
-            }
-            return $"{value:0.##} {str}";
+            double sval = size / sdiv;
+            return $"{sval:0.##} {suffix[stype]}";
         }
 
         private void DownloadDialog_Load(object senderd, EventArgs e1)
