@@ -46,6 +46,8 @@ namespace PlexWalk
                 StartDownloads();
         }
 
+        int lastTotal = 0;
+        DateTime lastTime = DateTime.Now;
         private void StartDownloads()
         {
             if (path == null)
@@ -58,28 +60,27 @@ namespace PlexWalk
             {
                 Client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(delegate (object sender, DownloadProgressChangedEventArgs e)
                 {
-                    int lastTotal = 0;
-                    DateTime lastTime;
 
                     if (lastTotal == 0)
                     {
-                        lastTime = DateTime.Now;
                         lastTotal = (int)(long)e.BytesReceived;
                     }
                     else
                     {
                         var now = DateTime.Now;
-                        var timeSpan = lastTime - DateTime.Now;
+                        var timeSpan = now - lastTime;
                         var bytesChange = e.BytesReceived - lastTotal;
-                        var bytesPerSecond = bytesChange / timeSpan.Seconds;
+                        var bytesPerSecond = bytesChange / timeSpan.Milliseconds;
+
+
+                        SetProgressSpeed(this.Speed, bytesPerSecond.ToString());
+                        SetProgressCircle(this.CurrentProgress, e.ProgressPercentage);
+                        SetProgressCircle(this.OverallProgress, e.ProgressPercentage + (int)OverallProgress.Value - ((int)OverallProgress.Value % 100));
+
+                        lastTime = DateTime.Now;
+                        lastTotal = (int)(long)e.BytesReceived;
+                        bytesPerSecond = bytesChange / timeSpan.Milliseconds;
                     }
-
-                    SetProgressSpeed(this.Speed, e.BytesReceived.ToString());
-                    SetProgressCircle(this.CurrentProgress, e.ProgressPercentage);
-                    SetProgressCircle(this.OverallProgress, e.ProgressPercentage + (int)OverallProgress.Value - ((int)OverallProgress.Value % 100));
-
-                    lastTime = DateTime.Now;
-                    lastTotal = (int)(long)e.BytesReceived;
 
                 });
                 Client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler
