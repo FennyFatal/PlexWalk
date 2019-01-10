@@ -68,7 +68,7 @@ namespace PlexWalk
                 value = size / BytesInGigabytes;
                 str = "GB/s";
             }
-            return $"{value:0.##} {str}";
+            return String.Format("{0:0.##} {1}",value,str);
         }
 
         private void DownloadDialog_Load(object senderd, EventArgs e1)
@@ -104,15 +104,17 @@ namespace PlexWalk
                         var timeSpan = now - lastTime;
                         if (timeSpan.Seconds == 0) return;
                         var bytesChange = e.BytesReceived - lastTotal;
-                        var bytesPerSecond = bytesChange / timeSpan.Seconds;
-
-                        SetProgressSpeed(this.Speed, FormatSize(bytesPerSecond));
-                        SetProgressCircle(this.CurrentProgress, e.ProgressPercentage);
-                        SetProgressCircle(this.OverallProgress, e.ProgressPercentage + (int)OverallProgress.Value - ((int)OverallProgress.Value % 100));
-
+                        if (timeSpan.Seconds != 0)
+                        {
+                            var bytesPerSecond = bytesChange / timeSpan.Seconds;
+                            SetProgressSpeed(this.Speed, FormatSize(bytesPerSecond));
+                        }
                         lastTime = DateTime.Now;
                         lastTotal = (int)(long)e.BytesReceived;
                     }
+
+                    SetProgressCircle(this.CurrentProgress, e.ProgressPercentage);
+                    SetProgressCircle(this.OverallProgress, e.ProgressPercentage + (int)OverallProgress.Value - ((int)OverallProgress.Value % 100));
 
                 });
                 Client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler

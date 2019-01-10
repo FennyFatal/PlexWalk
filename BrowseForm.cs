@@ -879,7 +879,10 @@ namespace PlexWalk
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
-            playInVLCToolStripMenuItem.Visible = ((Descriptor)selected.Tag).canDownload;
+            if (selected != null && selected.Tag != null)
+                playInVLCToolStripMenuItem.Visible = ((Descriptor)selected.Tag).canDownload;
+            else
+                playInVLCToolStripMenuItem.Visible = false;
         }
 
         private void playInVLCToolStripMenuItem_Click(object sender, EventArgs e)
