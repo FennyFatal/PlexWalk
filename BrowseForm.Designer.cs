@@ -37,6 +37,7 @@
             this.Expand = new System.Windows.Forms.ToolStripButton();
             this.Refresh = new System.Windows.Forms.ToolStripButton();
             this.Search = new System.Windows.Forms.ToolStripButton();
+            this.playInVLCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -62,14 +63,16 @@
             // 
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.refreshToolStripMenuItem});
+            this.refreshToolStripMenuItem,
+            this.playInVLCToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(128, 28);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(176, 80);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // refreshToolStripMenuItem
             // 
             this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(127, 24);
+            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(175, 24);
             this.refreshToolStripMenuItem.Text = "Refresh";
             this.refreshToolStripMenuItem.Click += new System.EventHandler(this.RefreshToolStripMenuItem_Click);
             // 
@@ -120,6 +123,13 @@
             this.Search.Text = "toolStripButton3";
             this.Search.Click += new System.EventHandler(this.Search_Click_1);
             // 
+            // playInVLCToolStripMenuItem
+            // 
+            this.playInVLCToolStripMenuItem.Name = "playInVLCToolStripMenuItem";
+            this.playInVLCToolStripMenuItem.Size = new System.Drawing.Size(175, 24);
+            this.playInVLCToolStripMenuItem.Text = "Play in VLC";
+            this.playInVLCToolStripMenuItem.Click += new System.EventHandler(this.playInVLCToolStripMenuItem_Click);
+            // 
             // BrowseForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
@@ -153,6 +163,7 @@
         private System.Windows.Forms.ToolStripButton Expand;
         private System.Windows.Forms.ToolStripButton Refresh;
         private System.Windows.Forms.ToolStripButton Search;
+        private System.Windows.Forms.ToolStripMenuItem playInVLCToolStripMenuItem;
     }
 }
 

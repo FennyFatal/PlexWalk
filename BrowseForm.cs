@@ -12,6 +12,8 @@ using System.IO;
 using System.Collections.Specialized;
 using System.Collections;
 using System.Threading;
+using Microsoft.Win32;
+using System.Diagnostics;
 
 namespace PlexWalk
 {
@@ -881,6 +883,42 @@ namespace PlexWalk
                 case RefreshMethod.ServerXmlUrl:
                     loadServerNodesFromXML(doServerXmlLogin(Descriptor.sourceXmlUrl));
                     break;
+            }
+        }
+
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+        {
+            playInVLCToolStripMenuItem.Visible = ((Descriptor)selected.Tag).canDownload;
+        }
+
+        private void playInVLCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RegistryKey key = null;
+            try
+            {
+                key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\VideoLAN\VLC");
+            }
+            catch
+            {
+                try
+                {
+                    key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\VideoLAN\VLC");
+                }
+                catch 
+                {
+                    MessageBox.Show("Please install VLC to use this feature");
+                }
+            }
+            if (key != null)
+            {
+                try
+                {
+                    Process.Start(key.GetValue("").ToString(), getDownloadURL(selected));
+                }
+                catch
+                {
+                    MessageBox.Show("Failed to launch VLC.");
+                }
             }
         }
     }
