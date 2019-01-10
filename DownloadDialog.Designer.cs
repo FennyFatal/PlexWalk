@@ -113,6 +113,7 @@
             // 
             // Speed
             // 
+            this.Speed.BackColor = System.Drawing.Color.Transparent;
             this.Speed.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Speed.ForeColor = System.Drawing.Color.White;
             this.Speed.Location = new System.Drawing.Point(0, 378);
