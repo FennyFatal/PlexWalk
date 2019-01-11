@@ -66,6 +66,7 @@ namespace PlexWalk
 
         int lastTotal = 0;
         DateTime lastTime = DateTime.Now;
+        private  bool isCancelling = false;
 
         private void StartDownloads()
         {
@@ -79,40 +80,55 @@ namespace PlexWalk
             {
                 Client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(delegate (object sender, DownloadProgressChangedEventArgs e)
                 {
-
-                    if (lastTotal == 0)
+                    if (isCancelling)
                     {
-                        lastTime = DateTime.Now;
-                        lastTotal = (int)(long)e.BytesReceived;
+                        try
+                        {
+                            Client.CancelAsync();
+                        }
+                        catch {};
                     }
                     else
                     {
-                        var now = DateTime.Now;
-                        var timeSpan = now - lastTime;
-                        if (timeSpan.Seconds == 0) return;
-                        var bytesChange = e.BytesReceived - lastTotal;
-                        if (timeSpan.Seconds != 0)
+                        if (lastTotal == 0)
                         {
-                            var bytesPerSecond = bytesChange / timeSpan.Seconds;
-                            SetProgressSpeed(this.Speed, FormatSize(bytesPerSecond));
+                            lastTime = DateTime.Now;
+                            lastTotal = (int)(long)e.BytesReceived;
                         }
-                        lastTime = DateTime.Now;
-                        lastTotal = (int)(long)e.BytesReceived;
+                        else
+                        {
+                            var now = DateTime.Now;
+                            var timeSpan = now - lastTime;
+                            if (timeSpan.Seconds == 0) return;
+                            var bytesChange = e.BytesReceived - lastTotal;
+                            if (timeSpan.Seconds != 0)
+                            {
+                                var bytesPerSecond = bytesChange / timeSpan.Seconds;
+                                SetProgressSpeed(this.Speed, FormatSize(bytesPerSecond));
+                            }
+                            lastTime = DateTime.Now;
+                            lastTotal = (int)(long)e.BytesReceived;
+                        }
+
+                        SetProgressCircle(this.CurrentProgress, e.ProgressPercentage);
+                        SetProgressCircle(this.OverallProgress, e.ProgressPercentage + (int)OverallProgress.Value - ((int)OverallProgress.Value % 100));
                     }
-
-                    SetProgressCircle(this.CurrentProgress, e.ProgressPercentage);
-                    SetProgressCircle(this.OverallProgress, e.ProgressPercentage + (int)OverallProgress.Value - ((int)OverallProgress.Value % 100));
-
                 });
                 Client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler
                 (delegate (object sender, System.ComponentModel.AsyncCompletedEventArgs e)
                 {
                     isDownloading = false;
+                    if (e.Cancelled)
+                    {
+                        isCancelling = false;
+                        CloseForm();
+                    }
                 });
                 (new Thread(() =>
                 {
                     doDownload(Client);
                 })).Start();
+
             }
         }
         delegate void SetTextDelegate(Control c, string text);
@@ -309,7 +325,8 @@ namespace PlexWalk
 
         private void ExitButton_Click(object sender, EventArgs e)
         {
-            this.Close();
+            isCancelling = true;
+            // results in inside cancelled callback: this.Close();
         }
 
         private void removeToolStripMenuItem_Click(object sender, EventArgs e)
