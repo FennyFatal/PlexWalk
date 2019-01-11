@@ -55,7 +55,7 @@ namespace PlexWalk
                 }
             }
             double sval = size / sdiv;
-            return String.Format("{0:0.##} {1}",sval ,suffix[stype]);
+            return String.Format("{0:0.##} {1}/s",sval ,suffix[stype]);
         }
 
         private void DownloadDialog_Load(object senderd, EventArgs e1)
