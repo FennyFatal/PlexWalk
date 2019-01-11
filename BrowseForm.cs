@@ -18,26 +18,41 @@ using PlexWalk;
 
 namespace PlexWalk
 {
-    public partial class BrowseForm : Form, PlexWalk.PlexUtils.FormInterface
+    public partial class BrowseForm : Form, PlexWalk.RootFormInterface
     {
-        private enum RefreshMethod
-        {
-            ServerXmlUrl,
-            Login,
-            LoginCLI,
-            Token,
-        };
         private RefreshMethod method;
         private DownloadDialog downloadDialog = null;
         string ownedPath = Descriptor.libraryBasePath;
         static TreeNode selected = null;
+
         public BrowseForm(string[] args)
         {
             InitializeComponent();
             if (args.Length > 0)
                 parseArgs(args);
         }
-        private Dictionary<string, string> args = new Dictionary<string, string>();
+        
+        public void CloseForm()
+        {
+            this.Close();
+        }
+
+        public RefreshMethod GetRefreshMethod()
+        {
+            return this.method;
+        }
+
+        public RefreshMethod SetRefreshMethod(RefreshMethod method)
+        {
+            return this.method = method;
+        }
+
+        public Dictionary<string, string> GetLaunchArgs()
+        {
+            return LaunchArgs;
+        }
+
+        public Dictionary<string, string> LaunchArgs = new Dictionary<string, string>();
 
         private void parseArgs(string[] args)
         {
@@ -52,7 +67,7 @@ namespace PlexWalk
                         {
                             if (next.IndexOf('=') + 1 != next.Length)
                             {
-                                this.args.Add(
+                                this.LaunchArgs.Add(
                                 next.Substring(0, next.IndexOf('=')).TrimStart('-').ToLower(),
                                 next.Substring(next.IndexOf('=') + 1, next.Length - (next.IndexOf('=')) - 1)
                                 );
@@ -75,7 +90,7 @@ namespace PlexWalk
                 }
                 else
                 {
-                    this.args.Add(last, next);
+                    this.LaunchArgs.Add(last, next);
                     last = null;
                 }
             }
@@ -142,21 +157,21 @@ namespace PlexWalk
 
             Descriptor.GUID = Guid.NewGuid().ToString();
 
-            if (args.ContainsKey("owned_path"))
-                ownedPath = args["owned_path"];
+            if (LaunchArgs.ContainsKey("owned_path"))
+                ownedPath = LaunchArgs["owned_path"];
 
-            if (args.ContainsKey("server_xml"))
-                parseME = doServerXmlLogin(args["server_xml"].Replace("\"", ""));
-            else if (args.ContainsKey("token"))
-                parseME = doTokenLogin(args["token"]);
+            if (LaunchArgs.ContainsKey("server_xml"))
+                parseME = PlexUtils.doServerXmlLogin(LaunchArgs["server_xml"].Replace("\"", ""),this);
+            else if (LaunchArgs.ContainsKey("token"))
+                parseME = PlexUtils.doTokenLogin(LaunchArgs["token"],this);
 
             if (parseME == null)
-                parseME = doMetaLogin();
+                parseME = PlexUtils.doMetaLogin(this);
 
             loadServerNodesFromXML(parseME);
         }
 
-        private void loadServerNodesFromXML(string parseME)
+        public void loadServerNodesFromXML(string parseME)
         {
             plexTreeView.Nodes.Clear();
             foreach (TreeNode tn in parseServers(parseME))
@@ -171,109 +186,6 @@ namespace PlexWalk
             }
         }
 
-        private string doServerXmlLogin(string server_xml)
-        {
-            using (WebClient wc = new System.Net.WebClient())
-            {
-                string result;
-                try
-                {
-                    result = wc.DownloadString(server_xml);
-                    method = RefreshMethod.ServerXmlUrl;
-                    Descriptor.sourceXmlUrl = server_xml;
-                }
-                catch
-                {
-                    return null;
-                }
-                return result;
-            }
-        }
-
-        private string doTokenLogin(string token)
-        {
-            using (WebClient wc = new System.Net.WebClient())
-            {
-                string result;
-                Descriptor.myToken = token;
-                try
-                {
-                    result = wc.DownloadString("https://plex.tv/pms/servers.xml" + "?X-Plex-Token=" + Descriptor.myToken);
-                    method = RefreshMethod.Token;
-                }
-                catch
-                {
-                    return null;
-                }
-                return result;
-            }
-        }
-
-        private string doMetaLogin()
-        {
-            using (WebClient wc = new System.Net.WebClient())
-            {
-                string parseME = null;
-                Boolean fail = false;
-                do
-                {
-                    try
-                    {
-                        if (!fail && args.ContainsKey("username") && args.ContainsKey("password"))
-                        {
-                            doLoginFromCLI(wc);
-                        }
-                        else
-                        {
-                            doLogin(wc);
-                        }
-                        parseME = wc.DownloadString("https://plex.tv/pms/servers.xml");
-                        wc.Headers["X-Plex-Client-Identifier"] = Descriptor.GUID;
-                        Descriptor.myToken = parseLogin(wc.UploadString("https://plex.tv/users/sign_in.xml", String.Empty));
-                        fail = false;
-                    }
-                    catch (Exception ex)
-                    {
-                        fail = true;
-                    }
-                } while (fail);
-                return parseME;
-            }
-        }
-
-        private void doLoginFromCLI(WebClient wc)
-        {
-            wc.Credentials = new NetworkCredential(args["username"], args["password"]);
-            wc.Headers[HttpRequestHeader.Authorization] = string.Format(
-                "Basic {0}",
-                Convert.ToBase64String(Encoding.ASCII.GetBytes(args["username"] + ":" + args["password"]))
-            );
-            method = RefreshMethod.LoginCLI;
-        }
-
-        private void doLogin(WebClient wc)
-        {
-            Login loginform = new Login();
-            loginform.ShowDialog();
-            if (loginform.DialogResult == System.Windows.Forms.DialogResult.Cancel)
-            {
-                this.Close();
-                return;
-            }
-            wc.Credentials = loginform.creds;
-            wc.Headers[HttpRequestHeader.Authorization] = string.Format("Basic {0}", loginform.headerAuth);
-            method = RefreshMethod.Login;
-        }
-
-        private string parseLogin(string login_xml)
-        {
-            using (XmlReader reader = XmlReader.Create(new StringReader(login_xml)))
-            {
-                reader.ReadToDescendant("authentication-token");
-                reader.Read();
-                return reader.ReadContentAsString();
-            }
-        }
         private void treeView1_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
             ThreadPool.QueueUserWorkItem(delegate (object state)
@@ -331,16 +243,6 @@ namespace PlexWalk
                 Parent.Nodes.Add(Child);
         }
 
-        private static string MakeValidFileName(string name)
-        {
-            if (name == null)
-                return name;
-            name = name.Substring(name.LastIndexOfAny("\\/".ToCharArray()) + 1);
-            string invalidChars = System.Text.RegularExpressions.Regex.Escape(new string(System.IO.Path.GetInvalidFileNameChars()));
-            string invalidRegStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", invalidChars);
-
-            return System.Text.RegularExpressions.Regex.Replace(name, invalidRegStr, "");
-        }
         private void treeView1_DoubleClick(object sender, EventArgs e)
         {
             if (((Descriptor)plexTreeView.SelectedNode.Tag).canDownload)
@@ -349,14 +251,17 @@ namespace PlexWalk
                 MessageBox.Show("URL Copied to clipboard");
             }
         }
+
         private string getDownloadURL(TreeNode node)
         {
             return ((Descriptor)node.Tag).getDownloadURL();
         }
+
         private string[] getDownloadURLs(TreeNode node)
         {
             return getDownloads(node).Select(x => x.getDownloadURL() + "|" + x.downloadFullpath).ToArray();
         }
+
         private Descriptor[] getDownloads(TreeNode nodes)
         {
             ArrayList strings = new ArrayList();
@@ -428,10 +333,10 @@ namespace PlexWalk
                 case RefreshMethod.Login:
                 case RefreshMethod.LoginCLI:
                 case RefreshMethod.Token:
-                    loadServerNodesFromXML(doTokenLogin(Descriptor.myToken));
+                    loadServerNodesFromXML(PlexUtils.doTokenLogin(Descriptor.myToken,this));
                     break;
                 case RefreshMethod.ServerXmlUrl:
-                    loadServerNodesFromXML(doServerXmlLogin(Descriptor.sourceXmlUrl));
+                    loadServerNodesFromXML(PlexUtils.doServerXmlLogin(Descriptor.sourceXmlUrl,this));
                     break;
             }
         }
@@ -478,7 +383,7 @@ namespace PlexWalk
 
         private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DownloadInfo[] di = getDownloads(plexTreeView.SelectedNode).Select(x => new DownloadInfo(x.getDownloadURL(), MakeValidFileName(x.downloadFilename), MakeValidFileName(x.subdir))).ToArray();
+            DownloadInfo[] di = getDownloads(plexTreeView.SelectedNode).Select(x => new DownloadInfo(x.getDownloadURL(), PlexUtils.MakeValidFileName(x.downloadFilename), PlexUtils.MakeValidFileName(x.subdir))).ToArray();
             if (downloadDialog == null || downloadDialog.IsDisposed)
                 downloadDialog = new DownloadDialog(di);
             else
