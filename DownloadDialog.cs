@@ -325,8 +325,10 @@ namespace PlexWalk
 
         private void ExitButton_Click(object sender, EventArgs e)
         {
-            isCancelling = true;
-            // results in inside cancelled callback: this.Close();
+            if (isDownloading)
+                isCancelling = true;
+            else
+                CloseForm();
         }
 
         private void removeToolStripMenuItem_Click(object sender, EventArgs e)
