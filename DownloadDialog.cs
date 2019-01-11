@@ -90,7 +90,7 @@ namespace PlexWalk
                     }
                     else
                     {
-                        if (lastTotal == 0)
+                        if (lastTotal == 0 || lastTotal > e.BytesReceived)
                         {
                             lastTime = DateTime.Now;
                             lastTotal = (int)(long)e.BytesReceived;
