@@ -9,6 +9,24 @@ using System.Xml;
 
 namespace PlexWalk
 {
+    public enum RefreshMethod
+    {
+        ServerXmlUrl,
+        Login,
+        LoginCLI,
+        Token,
+    };
+    public interface FormInterface
+    {
+        void AddNode(TreeNode tn, TreeNode tn2);
+    }
+    public interface RootFormInterface : FormInterface
+    {
+        RefreshMethod GetRefreshMethod();
+        RefreshMethod SetRefreshMethod(RefreshMethod method);
+        Dictionary<string, string> GetLaunchArgs();
+        void CloseForm();
+    }
     public class Descriptor
     {
         public static string libraryBasePath = "/library/sections";
@@ -59,10 +77,123 @@ namespace PlexWalk
     }
     class PlexUtils
     {
-        public interface FormInterface
+        static public string doServerXmlLogin(string server_xml, RootFormInterface rfi)
         {
-            void AddNode(TreeNode tn, TreeNode tn2);
+            using (WebClient wc = new System.Net.WebClient())
+            {
+                string result;
+                try
+                {
+                    result = wc.DownloadString(server_xml);
+                    rfi.SetRefreshMethod(RefreshMethod.ServerXmlUrl);
+                    Descriptor.sourceXmlUrl = server_xml;
+                }
+                catch
+                {
+                    return null;
+                }
+                return result;
+            }
         }
+
+        static public string doTokenLogin(string token, RootFormInterface rfi)
+        {
+            using (WebClient wc = new System.Net.WebClient())
+            {
+                string result;
+                Descriptor.myToken = token;
+                try
+                {
+                    result = wc.DownloadString("https://plex.tv/pms/servers.xml" + "?X-Plex-Token=" + Descriptor.myToken);
+                    rfi.SetRefreshMethod(RefreshMethod.Token);
+                }
+                catch
+                {
+                    return null;
+                }
+                return result;
+            }
+        }
+
+        public static string doMetaLogin(RootFormInterface rfi)
+        {
+            var args = rfi.GetLaunchArgs();
+            using (WebClient wc = new System.Net.WebClient())
+            {
+                string parseME = null;
+                Boolean fail = false;
+                do
+                {
+                    try
+                    {
+                        if (!fail && args.ContainsKey("username") && args.ContainsKey("password"))
+                        {
+                            doLoginFromCLI(wc,rfi);
+                        }
+                        else
+                        {
+                            doLogin(wc,rfi);
+                        }
+                        parseME = wc.DownloadString("https://plex.tv/pms/servers.xml");
+                        wc.Headers["X-Plex-Client-Identifier"] = Descriptor.GUID;
+                        Descriptor.myToken = parseLogin(wc.UploadString("https://plex.tv/users/sign_in.xml", String.Empty));
+                        fail = false;
+                    }
+                    catch (Exception ex)
+                    {
+                        fail = true;
+                    }
+                } while (fail);
+                return parseME;
+            }
+        }
+
+        static private void doLoginFromCLI(WebClient wc, RootFormInterface rfi)
+        {
+            var args = rfi.GetLaunchArgs();
+            wc.Credentials = new NetworkCredential(args["username"], args["password"]);
+            wc.Headers[HttpRequestHeader.Authorization] = string.Format(
+                "Basic {0}",
+                Convert.ToBase64String(Encoding.ASCII.GetBytes(args["username"] + ":" + args["password"]))
+            );
+            rfi.SetRefreshMethod(RefreshMethod.LoginCLI);
+        }
+
+        static private void doLogin(WebClient wc, RootFormInterface rfi)
+        {
+            Login loginform = new Login();
+            loginform.ShowDialog();
+            if (loginform.DialogResult == System.Windows.Forms.DialogResult.Cancel)
+            {
+                rfi.CloseForm();
+                return;
+            }
+            wc.Credentials = loginform.creds;
+            wc.Headers[HttpRequestHeader.Authorization] = string.Format("Basic {0}", loginform.headerAuth);
+            rfi.SetRefreshMethod(RefreshMethod.Login);
+        }
+
+        static private string parseLogin(string login_xml)
+        {
+            using (XmlReader reader = XmlReader.Create(new StringReader(login_xml)))
+            {
+                reader.ReadToDescendant("authentication-token");
+                reader.Read();
+                return reader.ReadContentAsString();
+            }
+        }
+
+        public static string MakeValidFileName(string name)
+        {
+            if (name == null)
+                return name;
+            name = name.Substring(name.LastIndexOfAny("\\/".ToCharArray()) + 1);
+            string invalidChars = System.Text.RegularExpressions.Regex.Escape(new string(System.IO.Path.GetInvalidFileNameChars()));
+            string invalidRegStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", invalidChars);
+
+            return System.Text.RegularExpressions.Regex.Replace(name, invalidRegStr, "");
+        }
+
         public static void populateSubNodes(TreeNode tnode, FormInterface fi)
         {
             using (WebClient wc = new System.Net.WebClient())

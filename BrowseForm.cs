@@ -34,7 +34,10 @@ namespace PlexWalk
         
         public void CloseForm()
         {
-            this.Close();
+            if (plexTreeView.InvokeRequired)
+                this.Invoke(new GenericCallback(CloseForm));
+            else
+                this.Close();
         }
 
         public RefreshMethod GetRefreshMethod()
@@ -229,6 +232,8 @@ namespace PlexWalk
             else
                 src.Nodes.Clear();
         }
+
+        delegate void GenericCallback();
 
         delegate void AddNodeCallback(TreeNode Parent, TreeNode Child);
 
