@@ -54,6 +54,7 @@ namespace PlexWalk
         public string subdir = null;
         public string seasonNumber = null;
         public string episodeNumber = null;
+        public string parentPart = null;
         public override string ToString()
         {
             return Title;
@@ -65,6 +66,7 @@ namespace PlexWalk
         }
         public Descriptor(Descriptor d)
         {
+            this.parentPart = d.parentPart;
             this.host = d.host;
             this.token = d.token;
             this.isSearchNode = d.isSearchNode;
@@ -420,7 +422,7 @@ namespace PlexWalk
 
                                 Descriptor Tag = new Descriptor((((Descriptor)tnode.Tag).host), ((Descriptor)tnode.Tag).token);
                                 Tag.downloadFullpath = reader.ReadContentAsString();
-                                Tag.downloadFilename = Tag.downloadFullpath.Substring(Tag.downloadFullpath.LastIndexOf("/") + 1);
+                                Tag.downloadFilename = Tag.downloadFullpath.Substring(Tag.downloadFullpath.LastIndexOf(@"\") + 1).Substring(Tag.downloadFullpath.LastIndexOf(@"/") + 1);
                                 if (Tag.downloadFilename == String.Empty)
                                     Tag.downloadFilename = String.Format("{0}.{1}", title, container);
                                 title = String.Format("Download {0} ({1}x{2}) {3}", Tag.downloadFilename, width, height, size);
@@ -496,7 +498,6 @@ namespace PlexWalk
 
                             if (!reader.ReadToFollowing("Part"))
                                 continue;
-
                             do
                             {
                                 if (!reader.MoveToAttribute("key"))
@@ -530,7 +531,7 @@ namespace PlexWalk
                                         Tag.ShowTitle = ((Descriptor)tnode.Tag).ShowTitle;
                                     }
                                     Tag.downloadFullpath = filename;
-                                    Tag.downloadFilename = Tag.downloadFullpath.Substring(Tag.downloadFullpath.LastIndexOf("/") + 1);
+                                    Tag.downloadFilename = Tag.downloadFullpath.Substring(Tag.downloadFullpath.LastIndexOf(@"\") + 1).Substring(Tag.downloadFullpath.LastIndexOf(@"/") + 1);
                                     if (Tag.downloadFilename.Contains('?') && container != null)
                                     {
                                         if (title2 != null)
@@ -555,13 +556,89 @@ namespace PlexWalk
                                     Tag.isIndirect = isIndirect;
                                     subnode.Name = key.StartsWith("/") ? key : (string)tnode.Name + '/' + key;
                                     subnode.Tag = Tag;
-                                    if (isIndirect)
-                                        subnode.Nodes.Add("");
-                                    node.Nodes.Add(subnode);
+                                    if (!((Descriptor)tnode.Tag).isSubtitlesNode)
+                                    {
+                                        if (isIndirect)
+                                        {
+                                            subnode.Nodes.Add("");
+                                        }
+                                        else
+                                        {
+                                            node.Nodes.Add(subnode);
+                                            TreeNode subNode = new TreeNode("Subtitles - " + title.Replace("Download ", ""))
+                                            {
+                                                Name = node.Name,
+                                                Tag = new Descriptor((Descriptor)tnode.Tag)
+                                                {
+                                                    parentPart = subnode.Name,
+                                                    isSubtitlesNode = true
+                                                }
+                                            };
+                                            subNode.Nodes.Add("");
+                                            node.Nodes.Add(subNode);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        reader.MoveToElement();
+                                        if (reader.ReadToDescendant("Stream"))
+                                        {
+                                            string lastLanguage = null;
+                                            int s_count = 0;
+                                            do
+                                            {
+                                                if (!reader.MoveToAttribute("streamType"))
+                                                    continue;
+                                                if (reader.ReadContentAsInt() != 3)
+                                                    continue;
+                                                string language = null;
+                                                if (reader.MoveToAttribute("language"))
+                                                    language = reader.ReadContentAsString();
+                                                if (language == lastLanguage)
+                                                    s_count++;
+                                                else
+                                                    s_count = 0;
+                                                lastLanguage = language;
+                                                string codec = null;
+                                                if (reader.MoveToAttribute("codec"))
+                                                    codec = reader.ReadContentAsString();
+                                                string sub_title = null;
+                                                if (reader.MoveToAttribute("title"))
+                                                    sub_title = reader.ReadContentAsString();
+                                                sub_title = title.Remove(title.LastIndexOf('.') + 1) 
+                                                    + (sub_title == null ? "" : sub_title + " - ") 
+                                                    + language 
+                                                    + (s_count > 0 ? " ("+count+")" :"") 
+                                                    + "." + codec;
+                                                TreeNode subNode = new TreeNode("Download " + sub_title)
+                                                {
+                                                    Name = node.Name,
+                                                    Tag = new Descriptor((Descriptor)tnode.Tag)
+                                                    {
+                                                        parentPart = subnode.Name,
+                                                        isSubtitlesNode = true,
+                                                        downloadFullpath = sub_title,
+                                                        downloadFilename = sub_title,
+                                                        canDownload = true,
+                                                        downloadUrl = key.StartsWith("http") ? key : (
+                                                            key.StartsWith("/") ? key 
+                                                            : (string)tnode.Name + '/' + key
+                                                        )
+                                                    }
+                                                };
+                                                fi.AddNode(tnode, subNode);
+                                            }
+                                            while (reader.ReadToFollowing("Stream"));
+                                        }
+                                        node = null;
+                                    }
                                 }
                             }
                             while (reader.ReadToNextSibling("Part"));
-                            fi.AddNode(tnode, node);
+                            if (node != null)
+                            {
+                                fi.AddNode(tnode, node);
+                            }
                         }
                     }
                 }
@@ -622,7 +699,7 @@ namespace PlexWalk
 
                                 Descriptor Tag = new Descriptor((((Descriptor)tnode.Tag).host), ((Descriptor)tnode.Tag).token);
                                 Tag.downloadFullpath = reader.ReadContentAsString();
-                                Tag.downloadFilename = Tag.downloadFullpath.Substring(Tag.downloadFullpath.LastIndexOf("/") + 1);
+                                Tag.downloadFilename = Tag.downloadFullpath.Substring(Tag.downloadFullpath.LastIndexOf(@"\") + 1).Substring(Tag.downloadFullpath.LastIndexOf(@"/") + 1);
 
                                 if (Tag.downloadFilename == String.Empty)
                                     Tag.downloadFilename = String.Format("{0}.{1}", title, container);
