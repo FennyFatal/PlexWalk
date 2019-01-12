@@ -22,7 +22,6 @@ namespace PlexWalk
     {
         private RefreshMethod method;
         private DownloadDialog downloadDialog = null;
-        string ownedPath = Descriptor.libraryBasePath;
         static TreeNode selected = null;
 
         public BrowseForm(string[] args)
@@ -100,68 +99,15 @@ namespace PlexWalk
             if (last != null)
                 throw new ArgumentException(String.Format("Required argument missing for '{0}'", last));
         }
-        private TreeNodeCollection parseServers(string servers_xml)
-        {
-            TreeNode tn = new TreeNode();
-            #region ServerData
-            using (XmlReader reader = XmlReader.Create(new StringReader(servers_xml)))
-            {
-                String address;
-                String name;
-                int port;
-                string accessToken = "";
-                string scheme;
-                string basepath = Descriptor.libraryBasePath;
-                while (reader.ReadToFollowing("Server"))
-                {
-                    if (!reader.MoveToAttribute("name"))
-                        continue;
-                    name = reader.ReadContentAsString();
-
-                    if (!reader.MoveToAttribute("address"))
-                        continue;
-                    address = reader.ReadContentAsString();
-
-                    if (!reader.MoveToAttribute("port"))
-                        continue;
-                    port = reader.ReadContentAsInt();
-
-                    if (!reader.MoveToAttribute("scheme"))
-                        continue;
-                    scheme = reader.ReadContentAsString();
-
-                    if (reader.MoveToAttribute("accessToken"))
-                    {
-                        accessToken = reader.ReadContentAsString();
-                        accessToken = String.Format("X-Plex-Token={0}", accessToken);
-                    }
-                    else
-                    {
-                        accessToken = String.Format("X-Plex-Token={0}", Descriptor.myToken);
-                        basepath = ownedPath;
-                    }
-                    if (reader.MoveToAttribute("owned") && reader.ReadContentAsString() == "1")
-                        basepath = ownedPath;
-
-                    TreeNode node = new TreeNode(name);
-                    node.Tag = new Descriptor(String.Format("{0}://{1}:{2}", scheme, address, port), accessToken);
-                    node.Name = basepath;
-                    tn.Nodes.Add(node);
-                }
-            }
-            #endregion
-            return tn.Nodes;
-        }
         private void BrowseForm_Load(object sender, EventArgs e)
         {
 
             string parseME = null;
-            bool normal_login = true;
 
             Descriptor.GUID = Guid.NewGuid().ToString();
 
             if (LaunchArgs.ContainsKey("owned_path"))
-                ownedPath = LaunchArgs["owned_path"];
+                Descriptor.libraryOwnedPath = LaunchArgs["owned_path"];
 
             if (LaunchArgs.ContainsKey("server_xml"))
                 parseME = PlexUtils.doServerXmlLogin(LaunchArgs["server_xml"].Replace("\"", ""),this);
@@ -177,7 +123,7 @@ namespace PlexWalk
         public void loadServerNodesFromXML(string parseME)
         {
             plexTreeView.Nodes.Clear();
-            foreach (TreeNode tn in parseServers(parseME))
+            foreach (TreeNode tn in PlexUtils.parseServers(parseME))
             {
                 plexTreeView.Nodes.Add(tn);
                 try
@@ -325,10 +271,17 @@ namespace PlexWalk
 
         private void Search_Click_1(object sender, EventArgs e)
         {
-            MessageBox.Show("Coming Soon");
-            //Search myNewForm = new Search();
-            //myNewForm.ShowDialog();
+            //MessageBox.Show("Coming Soon");
+            Search myNewForm = new Search();
+            var dialog = myNewForm.ShowDialog();
             //TODO: Create SearchResults window.
+            List<Descriptor> descriptors = new List<Descriptor>();
+            foreach (TreeNode t in plexTreeView.Nodes)
+            {
+                descriptors.Add((Descriptor)t.Tag);
+            }
+            SearchResults sr = new SearchResults(descriptors, myNewForm.query);
+            sr.Show();
         }
 
         private void Refresh_Click(object sender, EventArgs e)

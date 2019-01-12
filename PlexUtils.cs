@@ -29,7 +29,10 @@ namespace PlexWalk
     }
     public class Descriptor
     {
+        public string userName;
+        public string serverName;
         public static string libraryBasePath = "/library/sections";
+        public static string libraryOwnedPath = libraryBasePath;
         public static string sourceXmlUrl;
         public bool isSearchNode;
         public static string GUID;
@@ -94,6 +97,62 @@ namespace PlexWalk
                 }
                 return result;
             }
+        }
+
+        static public TreeNodeCollection parseServers(string servers_xml)
+        {
+            TreeNode tn = new TreeNode();
+            #region ServerData
+            using (XmlReader reader = XmlReader.Create(new StringReader(servers_xml)))
+            {
+                String address;
+                String name;
+                int port;
+                string accessToken = "";
+                string scheme;
+                string basepath = Descriptor.libraryBasePath;
+                while (reader.ReadToFollowing("Server"))
+                {
+                    if (!reader.MoveToAttribute("name"))
+                        continue;
+                    name = reader.ReadContentAsString();
+
+                    if (!reader.MoveToAttribute("address"))
+                        continue;
+                    address = reader.ReadContentAsString();
+
+                    if (!reader.MoveToAttribute("port"))
+                        continue;
+                    port = reader.ReadContentAsInt();
+
+                    if (!reader.MoveToAttribute("scheme"))
+                        continue;
+                    scheme = reader.ReadContentAsString();
+
+                    if (reader.MoveToAttribute("accessToken"))
+                    {
+                        accessToken = reader.ReadContentAsString();
+                        accessToken = String.Format("X-Plex-Token={0}", accessToken);
+                    }
+                    else
+                    {
+                        accessToken = String.Format("X-Plex-Token={0}", Descriptor.myToken);
+                        basepath = Descriptor.libraryOwnedPath;
+                    }
+                    if (reader.MoveToAttribute("owned") && reader.ReadContentAsString() == "1")
+                        basepath = Descriptor.libraryOwnedPath;
+
+                    TreeNode node = new TreeNode(name);
+                    node.Tag = new Descriptor(String.Format("{0}://{1}:{2}", scheme, address, port), accessToken) 
+                    { 
+                        serverName = name
+                    };
+                    node.Name = basepath;
+                    tn.Nodes.Add(node);
+                }
+            }
+            #endregion
+            return tn.Nodes;
         }
 
         static public string doTokenLogin(string token, RootFormInterface rfi)

@@ -78,6 +78,7 @@ namespace PlexWalk
             this.OverallProgress.Maximum = myDownloadInfo.Count() * 100;
             using (WebClient Client = new WebClient())
             {
+                Client.Headers["X-Plex-Client-Identifier"] = Descriptor.GUID;
                 Client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(delegate (object sender, DownloadProgressChangedEventArgs e)
                 {
                     if (isCancelling)
