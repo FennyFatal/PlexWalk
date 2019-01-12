@@ -78,7 +78,8 @@ namespace PlexWalk
         {
             if (!downloadUrl.StartsWith("/"))
                 return downloadUrl;
-            return host + downloadUrl + (token != "" ? (!downloadUrl.Contains("?") ? '?' : '&') + token : "");
+            string[] chunks = downloadFilename.Split(@"\/".ToCharArray());
+            return host + downloadUrl.Replace(downloadUrl.Substring(downloadUrl.LastIndexOf("file")), Uri.EscapeDataString(chunks[chunks.Length-1])) + (token != "" ? (!downloadUrl.Contains("?") ? '?' : '&') + token : "");
         }
     }
     class PlexUtils
