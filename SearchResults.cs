@@ -30,45 +30,21 @@ namespace PlexWalk
 
         private void SearchResults_Load(object sender, EventArgs e)
         {
-            if (Descriptor.sourceXmlUrl != null && Descriptor.sourceXmlUrl.ToLower().Contains("binary"))
+            string db_file = "db.db";
+            if (Descriptor.sourceXmlUrl != null && Descriptor.sourceXmlUrl.ToLower().Contains("binary") && LoadDBResources(db_file))
             {
-                string sqliteDllFile = "SQLite.Interop.dll";
-                if (!File.Exists(sqliteDllFile))
-                {
-                    if (Environment.Is64BitProcess)
-                    {
-                        PlexUtils.ExtractFile(Properties.Resources.SQLite_Interop_dll_x64,sqliteDllFile);
-                    }
-                    else
-                    {
-                        PlexUtils.ExtractFile(Properties.Resources.SQLite_Interop_dll_x86, sqliteDllFile);
-                    }
-                }
-                if (!GetDB)
-                {
-                    string file = "db.db";
-                    if (!File.Exists(file))
-                    {
-                        using (WebClient wc = new WebClient())
-                        {
-                            var zipData = wc.DownloadData(Descriptor.sourceXmlUrl.Replace(Descriptor.sourceXmlUrl.Substring(Descriptor.sourceXmlUrl.LastIndexOf('/')+1),"db.gz"));
-                            PlexUtils.ExtractFile(zipData, file);
-                        }
-                    }
-                    GetDB = true;
-                }
                 using (DbConnection cnn = System.Data.SQLite.SQLiteFactory.Instance.CreateConnection())
                 {
-                    cnn.ConnectionString = "Data Source=db.db";
+                    cnn.ConnectionString = "Data Source=" + db_file;
                     cnn.Open();
                     var command = cnn.CreateCommand();
-                    command.CommandText = String.Format("Select * from vMovies where title like '%{0}%'", query.Replace("'","''"));
+                    command.CommandText = String.Format("Select * from vMovies where title like '%{0}%'", query.Replace("'", "''"));
                     var reader = command.ExecuteReader();
                     while (reader.Read())
                     {
                         string[] things = new string[3];
                         int count = reader.GetValues(things);
-                        TreeNode n = new TreeNode(things[1]) { Tag = new Descriptor(new Uri(things[2]).Host,things[2].Substring(things[2].LastIndexOf('=')+1)) { canDownload = true, downloadUrl = things[2] }};
+                        TreeNode n = new TreeNode(things[1]) { Tag = new Descriptor(new Uri(things[2]).Host, things[2].Substring(things[2].LastIndexOf('=') + 1)) { canDownload = true, downloadUrl = things[2] } };
                         searchTreeView.Nodes.Add(n);
                     }
                 }
@@ -82,6 +58,37 @@ namespace PlexWalk
             }
             foreach (TreeNode n in searchTreeView.Nodes)
                 n.Expand();
+        }
+
+        private bool LoadDBResources(string db_file)
+        {
+            string sqliteDllFile = "SQLite.Interop.dll";
+            if (!File.Exists(sqliteDllFile))
+            {
+                if (Environment.Is64BitProcess)
+                {
+                    PlexUtils.ExtractFile(Properties.Resources.SQLite_Interop_dll_x64, sqliteDllFile);
+                }
+                else
+                {
+                    //PlexUtils.ExtractFile(Properties.Resources.SQLite_Interop_dll_x86, sqliteDllFile);
+                    MessageBox.Show("Your computer is old, and you should feel bad.");
+                    return false;
+                }
+            }
+            if (!GetDB)
+            {
+                if (!File.Exists(db_file))
+                {
+                    using (WebClient wc = new WebClient())
+                    {
+                        var zipData = wc.DownloadData(Descriptor.sourceXmlUrl.Replace(Descriptor.sourceXmlUrl.Substring(Descriptor.sourceXmlUrl.LastIndexOf('/') + 1), "db.gz"));
+                        PlexUtils.ExtractFile(zipData, db_file);
+                    }
+                }
+                GetDB = true;
+            }
+            return true;
         }
 
         delegate void ChangeNodeCallback(object sender, TreeNode src);
