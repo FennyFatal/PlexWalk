@@ -115,6 +115,13 @@ namespace PlexWalk
 
             if (parseME == null)
                 parseME = PlexUtils.doMetaLogin(this);
+            
+            //All Attempts at login failed.
+            if (parseME == null)
+            {
+                CloseForm();
+                return;
+            }
 
             loadServerNodesFromXML(parseME);
         }
