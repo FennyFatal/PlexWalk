@@ -572,7 +572,7 @@ namespace PlexWalk
                                         else
                                         {
                                             node.Nodes.Add(subnode);
-                                            TreeNode subNode = new TreeNode("Subtitles - " + title.Replace("Download ", ""))
+                                            TreeNode subNode = new TreeNode("Subtitles")
                                             {
                                                 Name = node.Name,
                                                 Tag = new Descriptor((Descriptor)tnode.Tag)
