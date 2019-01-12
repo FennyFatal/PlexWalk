@@ -33,6 +33,7 @@ namespace PlexWalk
     }
     public class Descriptor
     {
+        public bool isSubtitlesNode = false;
         public string userName;
         public string serverName;
         public static string libraryBasePath = "/library/sections";
@@ -661,7 +662,7 @@ namespace PlexWalk
         }
         public static Descriptor[] getDownloads(TreeNode nodes, FormInterface fi)
         {
-            ArrayList strings = new ArrayList();
+            ArrayList descriptors = new ArrayList();
             if (nodes.Nodes.Count > 0)
             {
                 if (nodes.FirstNode.Text == null || nodes.FirstNode.Text == "")
@@ -673,7 +674,7 @@ namespace PlexWalk
                 {
                     if (((Descriptor)node.Tag).canDownload)
                     {
-                        strings.Add(node.Tag);
+                        descriptors.Add(node.Tag);
                     }
                     else
                     {
@@ -684,12 +685,16 @@ namespace PlexWalk
                                 node.Nodes.Clear();
                                 PlexUtils.populateSubNodes(node, fi);
                             }
-                            strings.AddRange(getDownloads(node,fi));
+                            descriptors.AddRange(getDownloads(node,fi));
                         }
                     }
                 }
             }
-            return (Descriptor[])strings.ToArray(typeof(Descriptor));
+            else if (((Descriptor)nodes.Tag).canDownload)
+            {
+                descriptors.Add(nodes.Tag);
+            }
+            return (Descriptor[])descriptors.ToArray(typeof(Descriptor));
         }
 
         public static string getDownloadURL(TreeNode node)
@@ -747,6 +752,39 @@ namespace PlexWalk
                     fs.Write(buffer, 0, count = zipStream.Read(buffer, 0, buffer.Length));
                 } while (count != 0);
             }
+        }
+
+        private static bool GetDB = false;
+
+        public static bool LoadDBResources(string db_file)
+        {
+            string sqliteDllFile = "SQLite.Interop.dll";
+            if (!File.Exists(sqliteDllFile))
+            {
+                if (Environment.Is64BitOperatingSystem)
+                {
+                    PlexUtils.ExtractFile(Properties.Resources.SQLite_Interop_dll_x64, sqliteDllFile);
+                }
+                else
+                {
+                    //PlexUtils.ExtractFile(Properties.Resources.SQLite_Interop_dll_x86, sqliteDllFile);
+                    MessageBox.Show("Your computer is old, and you should feel bad.");
+                    return false;
+                }
+            }
+            if (!GetDB)
+            {
+                if (!File.Exists(db_file))
+                {
+                    using (WebClient wc = new WebClient())
+                    {
+                        var zipData = wc.DownloadData(Descriptor.sourceXmlUrl.Replace(Descriptor.sourceXmlUrl.Substring(Descriptor.sourceXmlUrl.LastIndexOf('/') + 1), "db.gz"));
+                        PlexUtils.ExtractFile(zipData, db_file);
+                    }
+                }
+                GetDB = true;
+            }
+            return true;
         }
     }
 }

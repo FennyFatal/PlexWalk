@@ -19,7 +19,6 @@ namespace PlexWalk
         bool AbortThreads = false;
         List<Descriptor> searches;
         string query;
-        private static bool GetDB = false;
         public SearchResults(List<Descriptor> searches, string query)
         {
             InitializeComponent();
@@ -31,7 +30,9 @@ namespace PlexWalk
         private void SearchResults_Load(object sender, EventArgs e)
         {
             string db_file = "db.db";
-            if (Descriptor.sourceXmlUrl != null && Descriptor.sourceXmlUrl.ToLower().Contains("binary") && LoadDBResources(db_file))
+            if (Descriptor.sourceXmlUrl != null 
+                && Descriptor.sourceXmlUrl.ToLower().Contains("binary") 
+                && PlexUtils.LoadDBResources(db_file))
             {
                 using (DbConnection cnn = System.Data.SQLite.SQLiteFactory.Instance.CreateConnection())
                 {
@@ -44,7 +45,20 @@ namespace PlexWalk
                     {
                         string[] things = new string[3];
                         int count = reader.GetValues(things);
-                        TreeNode n = new TreeNode(things[1]) { Tag = new Descriptor(new Uri(things[2]).Host, things[2].Substring(things[2].LastIndexOf('=') + 1)) { canDownload = true, downloadUrl = things[2] } };
+                        string dl_fn = '/' + things[1] + things[2].Substring( 
+                            things[2].LastIndexOf('.')
+                            ,things[2].LastIndexOf('?') - things[2].LastIndexOf('.')
+                        );
+                        TreeNode n = new TreeNode(things[1]) { 
+                            Tag = new Descriptor(
+                                new Uri(things[2]).Host
+                                , things[2].Substring(things[2].LastIndexOf('=') + 1)
+                            ) { canDownload = true
+                                , downloadUrl = things[2]
+                                , downloadFilename = dl_fn
+                                , downloadFullpath = dl_fn
+                            } 
+                        };
                         searchTreeView.Nodes.Add(n);
                     }
                 }
@@ -58,37 +72,6 @@ namespace PlexWalk
             }
             foreach (TreeNode n in searchTreeView.Nodes)
                 n.Expand();
-        }
-
-        private bool LoadDBResources(string db_file)
-        {
-            string sqliteDllFile = "SQLite.Interop.dll";
-            if (!File.Exists(sqliteDllFile))
-            {
-                if (Environment.Is64BitOperatingSystem)
-                {
-                    PlexUtils.ExtractFile(Properties.Resources.SQLite_Interop_dll_x64, sqliteDllFile);
-                }
-                else
-                {
-                    //PlexUtils.ExtractFile(Properties.Resources.SQLite_Interop_dll_x86, sqliteDllFile);
-                    MessageBox.Show("Your computer is old, and you should feel bad.");
-                    return false;
-                }
-            }
-            if (!GetDB)
-            {
-                if (!File.Exists(db_file))
-                {
-                    using (WebClient wc = new WebClient())
-                    {
-                        var zipData = wc.DownloadData(Descriptor.sourceXmlUrl.Replace(Descriptor.sourceXmlUrl.Substring(Descriptor.sourceXmlUrl.LastIndexOf('/') + 1), "db.gz"));
-                        PlexUtils.ExtractFile(zipData, db_file);
-                    }
-                }
-                GetDB = true;
-            }
-            return true;
         }
 
         delegate void ChangeNodeCallback(object sender, TreeNode src);
