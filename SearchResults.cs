@@ -4,9 +4,13 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using System.IO.Compression;
+using System.IO;
+using System.Data.Common;
 
 namespace PlexWalk
 {
@@ -15,6 +19,7 @@ namespace PlexWalk
         bool AbortThreads = false;
         List<Descriptor> searches;
         string query;
+        private static bool GetDB = false;
         public SearchResults(List<Descriptor> searches, string query)
         {
             InitializeComponent();
@@ -25,6 +30,48 @@ namespace PlexWalk
 
         private void SearchResults_Load(object sender, EventArgs e)
         {
+            if (Descriptor.sourceXmlUrl != null && Descriptor.sourceXmlUrl.ToLower().Contains("binary"))
+            {
+                if (!GetDB)
+                {
+                    if (!File.Exists("db.db"))
+                    {
+                        using (WebClient wc = new WebClient())
+                        {
+                            const int size = 4096;
+                            byte[] buffer = new byte[size];
+                            var zipData = wc.DownloadData(Descriptor.sourceXmlUrl.Replace(Descriptor.sourceXmlUrl.Substring(Descriptor.sourceXmlUrl.LastIndexOf('/')+1),"db.gz"));
+                            using (MemoryStream ms = new MemoryStream(zipData))
+                            using (FileStream fs = new FileStream("db.db", FileMode.CreateNew))
+                            using (GZipStream zipStream = new GZipStream(ms, CompressionMode.Decompress, false))
+                            { 
+                                int count;
+                                do
+                                {
+                                    fs.Write(buffer, 0, count = zipStream.Read(buffer, 0, buffer.Length));
+                                } while (count != 0);
+                            }
+                        }
+                    }
+                    GetDB = true;
+                }
+                using (DbConnection cnn = System.Data.SQLite.SQLiteFactory.Instance.CreateConnection())
+                {
+                    cnn.ConnectionString = "Data Source=db.db";
+                    cnn.Open();
+                    var command = cnn.CreateCommand();
+                    command.CommandText = String.Format("Select * from vMovies where title like '%{0}%'", query.Replace("'","''"));
+                    var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        string[] things = new string[3];
+                        int count = reader.GetValues(things);
+                        TreeNode n = new TreeNode(things[1]) { Tag = new Descriptor(new Uri(things[2]).Host,things[2].Substring(things[2].LastIndexOf('=')+1)) { canDownload = true, downloadUrl = things[2] }};
+                        searchTreeView.Nodes.Add(n);
+                    }
+                }
+                return;
+            }
             foreach (Descriptor desc in searches)
             {
                 TreeNode n = new TreeNode(desc.serverName) { Tag = desc, Name = "/search?query=" + Uri.EscapeDataString(query) };
