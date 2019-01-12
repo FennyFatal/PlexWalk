@@ -83,7 +83,14 @@ namespace PlexWalk
             if (!downloadUrl.StartsWith("/"))
                 return downloadUrl;
             string[] chunks = downloadFilename.Split(@"\/".ToCharArray());
-            return host + downloadUrl.Replace(downloadUrl.Substring(downloadUrl.LastIndexOf("file")), Uri.EscapeDataString(chunks[chunks.Length-1])) + (token != "" ? (!downloadUrl.Contains("?") ? '?' : '&') + token : "");
+            
+            return host
+                + (downloadUrl.Contains("file.") ? 
+                    downloadUrl.Replace(
+                        downloadUrl.Substring(downloadUrl.LastIndexOf("file."))
+                        , Uri.EscapeDataString(chunks[chunks.Length - 1])
+                    ) : downloadUrl + '/' + Uri.EscapeDataString(chunks[chunks.Length - 1]) )
+                + (token != "" ? (!downloadUrl.Contains("?") ? '?' : '&') + token : "");
         }
     }
     class PlexUtils
@@ -587,10 +594,11 @@ namespace PlexWalk
                                             int s_count = 0;
                                             do
                                             {
-                                                if (!reader.MoveToAttribute("streamType"))
+                                                if (!reader.MoveToAttribute("streamType") && reader.ReadContentAsInt() != 3)
                                                     continue;
-                                                if (reader.ReadContentAsInt() != 3)
+                                                if (!reader.MoveToAttribute("key"))
                                                     continue;
+                                                key = reader.ReadContentAsString();
                                                 string language = null;
                                                 if (reader.MoveToAttribute("language"))
                                                     language = reader.ReadContentAsString();
@@ -602,13 +610,15 @@ namespace PlexWalk
                                                 string codec = null;
                                                 if (reader.MoveToAttribute("codec"))
                                                     codec = reader.ReadContentAsString();
+
                                                 string sub_title = null;
                                                 if (reader.MoveToAttribute("title"))
                                                     sub_title = reader.ReadContentAsString();
-                                                sub_title = title.Remove(title.LastIndexOf('.') + 1) 
+                                                string parent_title = title.Replace("Download ", "");
+                                                sub_title = parent_title.Remove(parent_title.LastIndexOf('.') + 1) 
                                                     + (sub_title == null ? "" : sub_title + " - ") 
                                                     + language 
-                                                    + (s_count > 0 ? " ("+count+")" :"") 
+                                                    + (s_count > 0 ? " ("+s_count+")" :"") 
                                                     + "." + codec;
                                                 TreeNode subNode = new TreeNode("Download " + sub_title)
                                                 {
