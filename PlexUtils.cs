@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -730,6 +731,21 @@ namespace PlexWalk
                 {
                     MessageBox.Show("Failed to launch VLC.");
                 }
+            }
+        }
+        public static void ExtractFile(byte[] zipData, string file)
+        {
+            const int size = 4096;
+            byte[] buffer = new byte[size];
+            using (MemoryStream ms = new MemoryStream(zipData))
+            using (FileStream fs = new FileStream(file, FileMode.CreateNew))
+            using (GZipStream zipStream = new GZipStream(ms, CompressionMode.Decompress, false))
+            {
+                int count;
+                do
+                {
+                    fs.Write(buffer, 0, count = zipStream.Read(buffer, 0, buffer.Length));
+                } while (count != 0);
             }
         }
     }
