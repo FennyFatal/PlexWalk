@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -80,6 +83,7 @@ namespace PlexWalk
     }
     class PlexUtils
     {
+        static public DownloadDialog downloadDialog = null;
         static public string doServerXmlLogin(string server_xml, RootFormInterface rfi)
         {
             using (WebClient wc = new System.Net.WebClient())
@@ -647,6 +651,80 @@ namespace PlexWalk
                 ((Descriptor)node.Tag).isSearchNode = true;
                 node.Nodes.Add(new TreeNode());
                 fi.AddNode(tnode, node);
+            }
+        }
+        public static Descriptor[] getDownloads(TreeNode nodes, FormInterface fi)
+        {
+            ArrayList strings = new ArrayList();
+            if (nodes.Nodes.Count > 0)
+            {
+                if (nodes.FirstNode.Text == null || nodes.FirstNode.Text == "")
+                {
+                    nodes.Nodes.Clear();
+                    PlexUtils.populateSubNodes(nodes, fi);
+                }
+                foreach (TreeNode node in nodes.Nodes)
+                {
+                    if (((Descriptor)node.Tag).canDownload)
+                    {
+                        strings.Add(node.Tag);
+                    }
+                    else
+                    {
+                        if (node.Nodes.Count > 0)
+                        {
+                            if (node.FirstNode.Text == null || node.FirstNode.Text == "")
+                            {
+                                node.Nodes.Clear();
+                                PlexUtils.populateSubNodes(node, fi);
+                            }
+                            strings.AddRange(getDownloads(node,fi));
+                        }
+                    }
+                }
+            }
+            return (Descriptor[])strings.ToArray(typeof(Descriptor));
+        }
+
+        public static string getDownloadURL(TreeNode node)
+        {
+            return ((Descriptor)node.Tag).getDownloadURL();
+        }
+
+        public static string[] getDownloadURLs(TreeNode node, FormInterface fi)
+        {
+            return getDownloads(node,fi).Select(x => x.getDownloadURL() + "|" + x.downloadFullpath).ToArray();
+        }
+
+        internal static void PlayInVLC(TreeNode selected)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            RegistryKey key = null;
+            try
+            {
+                using (var lm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64))
+                {
+                    key = lm.OpenSubKey(@"SOFTWARE\VideoLAN\VLC\");
+                    if (key == null)
+                        key = lm.OpenSubKey(@"SOFTWARE\WOW6432Node\VideoLAN\VLC\");
+                    if (key == null)
+                        MessageBox.Show("Please install VLC to use this feature");
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Failed to read from registry");
+            }
+            if (key != null)
+            {
+                try
+                {
+                    Process.Start(key.GetValue("").ToString(), PlexUtils.getDownloadURL(selected));
+                }
+                catch
+                {
+                    MessageBox.Show("Failed to launch VLC.");
+                }
             }
         }
     }

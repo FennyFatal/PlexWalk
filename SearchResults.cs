@@ -89,5 +89,48 @@ namespace PlexWalk
             else
                 src.Nodes.Clear();
         }
+
+        TreeNode selected;
+        private void searchTreeView_MouseUp(object sender, MouseEventArgs e)
+        {
+            selected = ((TreeView)sender).GetNodeAt(e.Location);
+            if (e.Button == System.Windows.Forms.MouseButtons.Right)
+                searchContextMenu.Show();
+        }
+
+        private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DownloadInfo[] di = PlexUtils.getDownloads(selected,this).Select(x => new DownloadInfo(x.getDownloadURL(), PlexUtils.MakeValidFileName(x.downloadFilename), PlexUtils.MakeValidFileName(x.subdir))).ToArray();
+            if (PlexUtils.downloadDialog == null || PlexUtils.downloadDialog.IsDisposed)
+                PlexUtils.downloadDialog = new DownloadDialog(di);
+            else
+                PlexUtils.downloadDialog.enqueue(di);
+            PlexUtils.downloadDialog.Show();
+        }
+
+        private void copyUrlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(PlexUtils.getDownloadURL(selected));
+            MessageBox.Show("URL Copied to clipboard");
+        }
+
+        private void copyUrlToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            if (selected == null || selected.Tag == null)
+            {
+                copyUrlToolStripMenuItem.Visible = false;
+                playInVlcToolStripMenuItem.Visible = false;
+            }
+            else
+            {
+                copyUrlToolStripMenuItem.Visible = ((Descriptor)selected.Tag).canDownload;
+                playInVlcToolStripMenuItem.Visible = ((Descriptor)selected.Tag).canDownload;
+            }
+        }
+
+        private void playInVlcToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PlexUtils.PlayInVLC(selected);
+        }
     }
 }

@@ -21,7 +21,6 @@ namespace PlexWalk
     public partial class BrowseForm : Form, PlexWalk.RootFormInterface
     {
         private RefreshMethod method;
-        private DownloadDialog downloadDialog = null;
         static TreeNode selected = null;
 
         public BrowseForm(string[] args)
@@ -198,52 +197,9 @@ namespace PlexWalk
         {
             if (((Descriptor)plexTreeView.SelectedNode.Tag).canDownload)
             {
-                Clipboard.SetText(getDownloadURL(plexTreeView.SelectedNode));
+                Clipboard.SetText(PlexUtils.getDownloadURL(plexTreeView.SelectedNode));
                 MessageBox.Show("URL Copied to clipboard");
             }
-        }
-
-        private string getDownloadURL(TreeNode node)
-        {
-            return ((Descriptor)node.Tag).getDownloadURL();
-        }
-
-        private string[] getDownloadURLs(TreeNode node)
-        {
-            return getDownloads(node).Select(x => x.getDownloadURL() + "|" + x.downloadFullpath).ToArray();
-        }
-
-        private Descriptor[] getDownloads(TreeNode nodes)
-        {
-            ArrayList strings = new ArrayList();
-            if (nodes.Nodes.Count > 0)
-            {
-                if (nodes.FirstNode.Text == null || nodes.FirstNode.Text == "")
-                {
-                    nodes.Nodes.Clear();
-                    PlexUtils.populateSubNodes(nodes, this);
-                }
-                foreach (TreeNode node in nodes.Nodes)
-                {
-                    if (((Descriptor)node.Tag).canDownload)
-                    {
-                        strings.Add(node.Tag);
-                    }
-                    else
-                    {
-                        if (node.Nodes.Count > 0)
-                        {
-                            if (node.FirstNode.Text == null || node.FirstNode.Text == "")
-                            {
-                                node.Nodes.Clear();
-                                PlexUtils.populateSubNodes(node, this);
-                            }
-                            strings.AddRange(getDownloads(node));
-                        }
-                    }
-                }
-            }
-            return (Descriptor[])strings.ToArray(typeof(Descriptor));
         }
 
         private void plexTreeView_MouseUp(object sender, MouseEventArgs e)
@@ -309,44 +265,17 @@ namespace PlexWalk
 
         private void playInVLCToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            RegistryKey key = null;
-            try
-            {
-                using (var lm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64))
-                {
-                    key = lm.OpenSubKey(@"SOFTWARE\VideoLAN\VLC\");
-                    if (key == null)
-                        key = lm.OpenSubKey(@"SOFTWARE\WOW6432Node\VideoLAN\VLC\");
-                    if (key == null)
-                        MessageBox.Show("Please install VLC to use this feature");
-                }
-            }
-            catch
-            {
-                MessageBox.Show("Failed to read from registry");
-            }
-            if (key != null)
-            {
-                try
-                {
-                    Process.Start(key.GetValue("").ToString(), getDownloadURL(selected));
-                }
-                catch
-                {
-                    MessageBox.Show("Failed to launch VLC.");
-                }
-            }
+            PlexUtils.PlayInVLC(selected);
         }
 
         private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DownloadInfo[] di = getDownloads(plexTreeView.SelectedNode).Select(x => new DownloadInfo(x.getDownloadURL(), PlexUtils.MakeValidFileName(x.downloadFilename), PlexUtils.MakeValidFileName(x.subdir))).ToArray();
-            if (downloadDialog == null || downloadDialog.IsDisposed)
-                downloadDialog = new DownloadDialog(di);
+            DownloadInfo[] di = PlexUtils.getDownloads(selected,this).Select(x => new DownloadInfo(x.getDownloadURL(), PlexUtils.MakeValidFileName(x.downloadFilename), PlexUtils.MakeValidFileName(x.subdir))).ToArray();
+            if (PlexUtils.downloadDialog == null || PlexUtils.downloadDialog.IsDisposed)
+                PlexUtils.downloadDialog = new DownloadDialog(di);
             else
-                downloadDialog.enqueue(di);
-            downloadDialog.Show();
+                PlexUtils.downloadDialog.enqueue(di);
+            PlexUtils.downloadDialog.Show();
         }
     }
 }
