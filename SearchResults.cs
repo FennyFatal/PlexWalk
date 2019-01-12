@@ -32,25 +32,27 @@ namespace PlexWalk
         {
             if (Descriptor.sourceXmlUrl != null && Descriptor.sourceXmlUrl.ToLower().Contains("binary"))
             {
+                string sqliteDllFile = "SQLite.Interop.dll";
+                if (!File.Exists(sqliteDllFile))
+                {
+                    if (Environment.Is64BitProcess)
+                    {
+                        ExtractFile(Properties.Resources.SQLite_Interop_dll_x64,sqliteDllFile);
+                    }
+                    else
+                    {
+                        ExtractFile(Properties.Resources.SQLite_Interop_dll_x86,sqliteDllFile);
+                    }
+                }
                 if (!GetDB)
                 {
-                    if (!File.Exists("db.db"))
+                    string file = "db.db";
+                    if (!File.Exists(file))
                     {
                         using (WebClient wc = new WebClient())
                         {
-                            const int size = 4096;
-                            byte[] buffer = new byte[size];
                             var zipData = wc.DownloadData(Descriptor.sourceXmlUrl.Replace(Descriptor.sourceXmlUrl.Substring(Descriptor.sourceXmlUrl.LastIndexOf('/')+1),"db.gz"));
-                            using (MemoryStream ms = new MemoryStream(zipData))
-                            using (FileStream fs = new FileStream("db.db", FileMode.CreateNew))
-                            using (GZipStream zipStream = new GZipStream(ms, CompressionMode.Decompress, false))
-                            { 
-                                int count;
-                                do
-                                {
-                                    fs.Write(buffer, 0, count = zipStream.Read(buffer, 0, buffer.Length));
-                                } while (count != 0);
-                            }
+                            ExtractFile(zipData,file);
                         }
                     }
                     GetDB = true;
@@ -80,6 +82,22 @@ namespace PlexWalk
             }
             foreach (TreeNode n in searchTreeView.Nodes)
                 n.Expand();
+        }
+
+        private void ExtractFile(byte[] zipData, string file)
+        {
+            const int size = 4096;
+            byte[] buffer = new byte[size];
+            using (MemoryStream ms = new MemoryStream(zipData))
+            using (FileStream fs = new FileStream(file, FileMode.CreateNew))
+            using (GZipStream zipStream = new GZipStream(ms, CompressionMode.Decompress, false))
+            {
+                int count;
+                do
+                {
+                    fs.Write(buffer, 0, count = zipStream.Read(buffer, 0, buffer.Length));
+                } while (count != 0);
+            }
         }
 
         delegate void ChangeNodeCallback(object sender, TreeNode src);
