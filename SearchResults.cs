@@ -65,7 +65,7 @@ namespace PlexWalk
             string sqliteDllFile = "SQLite.Interop.dll";
             if (!File.Exists(sqliteDllFile))
             {
-                if (Environment.Is64BitProcess)
+                if (Environment.Is64BitOperatingSystem)
                 {
                     PlexUtils.ExtractFile(Properties.Resources.SQLite_Interop_dll_x64, sqliteDllFile);
                 }
