@@ -5,8 +5,6 @@ VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexWalk", "PlexWalk.csproj", "{EED1B396-9808-455C-B2C4-632936530264}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gZIpTheThing", "..\gZIpTheThing\gZIpTheThing.csproj", "{CDD9FB40-0555-45C8-9270-717ED6CC415F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,16 +25,6 @@ Global
 		{EED1B396-9808-455C-B2C4-632936530264}.Release|Mixed Platforms.Build.0 = Release|x86
 		{EED1B396-9808-455C-B2C4-632936530264}.Release|x86.ActiveCfg = Release|x86
 		{EED1B396-9808-455C-B2C4-632936530264}.Release|x86.Build.0 = Release|x86
-		{CDD9FB40-0555-45C8-9270-717ED6CC415F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CDD9FB40-0555-45C8-9270-717ED6CC415F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CDD9FB40-0555-45C8-9270-717ED6CC415F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{CDD9FB40-0555-45C8-9270-717ED6CC415F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{CDD9FB40-0555-45C8-9270-717ED6CC415F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{CDD9FB40-0555-45C8-9270-717ED6CC415F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CDD9FB40-0555-45C8-9270-717ED6CC415F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CDD9FB40-0555-45C8-9270-717ED6CC415F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{CDD9FB40-0555-45C8-9270-717ED6CC415F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{CDD9FB40-0555-45C8-9270-717ED6CC415F}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
