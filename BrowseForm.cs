@@ -272,7 +272,10 @@ namespace PlexWalk
 
         private void playInVLCToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            PlexUtils.PlayInVLC(selected);
+            if (((Descriptor)selected.Tag).isSubtitlesNode)
+                PlexUtils.PlayInVLC(selected.Parent.PrevNode,selected);
+            else
+                PlexUtils.PlayInVLC(selected);
         }
 
         private void downloadToolStripMenuItem_Click(object sender, EventArgs e)

@@ -66,6 +66,7 @@ namespace PlexWalk
         }
         public Descriptor(Descriptor d)
         {
+            this.isSubtitlesNode = d.isSubtitlesNode;
             this.parentPart = d.parentPart;
             this.host = d.host;
             this.token = d.token;
@@ -794,7 +795,7 @@ namespace PlexWalk
             return getDownloads(node,fi).Select(x => x.getDownloadURL() + "|" + x.downloadFullpath).ToArray();
         }
 
-        internal static void PlayInVLC(TreeNode selected)
+        internal static void PlayInVLC(TreeNode selected, TreeNode subfile = null)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo();
             RegistryKey key = null;
@@ -817,12 +818,30 @@ namespace PlexWalk
             {
                 try
                 {
-                    Process.Start(key.GetValue("").ToString(), PlexUtils.getDownloadURL(selected));
+                    Process.Start(key.GetValue("").ToString(), PlexUtils.getDownloadURL(selected) 
+                        + (subfile == null ? "" : " --sub-file=\"" + downloadTemp(PlexUtils.getDownloadURL(subfile)) + '"')
+                    );
                 }
                 catch
                 {
                     MessageBox.Show("Failed to launch VLC.");
                 }
+            }
+        }
+
+        private static string downloadTemp(string p)
+        {
+            using (WebClient wc = new WebClient())
+            {
+                string folder = Path.GetTempFileName();
+                string result = folder + @"\" + Path.GetFileName(new Uri(p).LocalPath);
+                try
+                {
+                    File.Delete(folder);
+                    Directory.CreateDirectory(folder);
+                } catch { }
+                wc.DownloadFile(p, result);
+                return result;
             }
         }
         public static void ExtractFile(byte[] zipData, string file)
