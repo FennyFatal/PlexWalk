@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SearchResults));
             this.searchTreeView = new System.Windows.Forms.TreeView();
             this.searchContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -45,10 +46,10 @@
             this.searchTreeView.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(43)))), ((int)(((byte)(48)))), ((int)(((byte)(52)))));
             this.searchTreeView.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold);
             this.searchTreeView.ForeColor = System.Drawing.Color.White;
-            this.searchTreeView.Location = new System.Drawing.Point(9, 10);
-            this.searchTreeView.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.searchTreeView.Location = new System.Drawing.Point(12, 12);
+            this.searchTreeView.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.searchTreeView.Name = "searchTreeView";
-            this.searchTreeView.Size = new System.Drawing.Size(367, 517);
+            this.searchTreeView.Size = new System.Drawing.Size(488, 635);
             this.searchTreeView.TabIndex = 0;
             this.searchTreeView.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.searchTreeView_BeforeExpand);
             this.searchTreeView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.searchTreeView_MouseUp);
@@ -61,19 +62,19 @@
             this.copyUrlToolStripMenuItem,
             this.playInVlcToolStripMenuItem});
             this.searchContextMenu.Name = "searchContextMenu";
-            this.searchContextMenu.Size = new System.Drawing.Size(176, 104);
+            this.searchContextMenu.Size = new System.Drawing.Size(150, 76);
             // 
             // downloadToolStripMenuItem
             // 
             this.downloadToolStripMenuItem.Name = "downloadToolStripMenuItem";
-            this.downloadToolStripMenuItem.Size = new System.Drawing.Size(175, 24);
+            this.downloadToolStripMenuItem.Size = new System.Drawing.Size(149, 24);
             this.downloadToolStripMenuItem.Text = "Download";
             this.downloadToolStripMenuItem.Click += new System.EventHandler(this.downloadToolStripMenuItem_Click);
             // 
             // copyUrlToolStripMenuItem
             // 
             this.copyUrlToolStripMenuItem.Name = "copyUrlToolStripMenuItem";
-            this.copyUrlToolStripMenuItem.Size = new System.Drawing.Size(175, 24);
+            this.copyUrlToolStripMenuItem.Size = new System.Drawing.Size(149, 24);
             this.copyUrlToolStripMenuItem.Text = "Copy Url";
             this.copyUrlToolStripMenuItem.DropDownOpening += new System.EventHandler(this.copyUrlToolStripMenuItem_DropDownOpening);
             this.copyUrlToolStripMenuItem.Click += new System.EventHandler(this.copyUrlToolStripMenuItem_Click);
@@ -81,23 +82,25 @@
             // playInVlcToolStripMenuItem
             // 
             this.playInVlcToolStripMenuItem.Name = "playInVlcToolStripMenuItem";
-            this.playInVlcToolStripMenuItem.Size = new System.Drawing.Size(175, 24);
+            this.playInVlcToolStripMenuItem.Size = new System.Drawing.Size(149, 24);
             this.playInVlcToolStripMenuItem.Text = "Play in VLC";
             this.playInVlcToolStripMenuItem.Click += new System.EventHandler(this.playInVlcToolStripMenuItem_Click);
             // 
             // SearchResults
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(43)))), ((int)(((byte)(48)))), ((int)(((byte)(52)))));
-            this.ClientSize = new System.Drawing.Size(384, 536);
+            this.ClientSize = new System.Drawing.Size(512, 660);
+            this.ContextMenuStrip = this.searchContextMenu;
             this.Controls.Add(this.searchTreeView);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MaximizeBox = false;
             this.Name = "SearchResults";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Search Results";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SearchResults_FormClosing);
             this.Load += new System.EventHandler(this.SearchResults_Load);
             this.searchContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);

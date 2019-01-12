@@ -12,6 +12,7 @@ namespace PlexWalk
 {
     public partial class SearchResults : Form, FormInterface
     {
+        bool AbortThreads = false;
         List<Descriptor> searches;
         string query;
         public SearchResults(List<Descriptor> searches, string query)
@@ -64,6 +65,16 @@ namespace PlexWalk
         {
             ThreadPool.QueueUserWorkItem(delegate(object state)
             {
+                if (AbortThreads)
+                {
+                    int total; int count;
+                    int max_total ; int max_count;
+                    ThreadPool.GetMaxThreads(out max_count, out max_total);
+                    ThreadPool.GetAvailableThreads(out count,out total);
+                    if (count == max_count && total == max_total)
+                        AbortThreads = false;
+                    return;
+                }
                 object[] array = state as object[];
                 TreeNode src = (TreeNode)array[0];
                 if (src.FirstNode.Text == null || src.FirstNode.Text == "")
@@ -84,7 +95,10 @@ namespace PlexWalk
             if (((Control)sender).InvokeRequired)
             {
                 ChangeNodeCallback d = new ChangeNodeCallback(ClearNodes);
-                this.Invoke(d, new object[] { sender, src });
+                try
+                {
+                    this.Invoke(d, new object[] { sender, src });
+                } catch { }
             }
             else
                 src.Nodes.Clear();
@@ -131,6 +145,11 @@ namespace PlexWalk
         private void playInVlcToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PlexUtils.PlayInVLC(selected);
+        }
+
+        private void SearchResults_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            AbortThreads = true;
         }
     }
 }
