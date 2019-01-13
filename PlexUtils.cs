@@ -219,7 +219,7 @@ namespace PlexWalk
                         Descriptor.myToken = parseLogin(wc.UploadString("https://plex.tv/users/sign_in.xml", String.Empty));
                         fail = false;
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         fail = true;
                     }

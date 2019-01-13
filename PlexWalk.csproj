@@ -136,7 +136,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ILMergeOrder.txt" />
-    <None Include="Resources\13079831461297786048[1].png" />
+    <None Include="Resources\YesAnime.png" />
+    <None Include="Resources\Anime.png" />
     <None Include="Properties\Resources\exit.png" />
     <None Include="Properties\Resources\login.png" />
     <None Include="Properties\Resources\refresh.png" />

@@ -36,9 +36,9 @@
             this.playInVLCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.downloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.Expand = new System.Windows.Forms.ToolStripButton();
-            this.Refresh = new System.Windows.Forms.ToolStripButton();
-            this.Search = new System.Windows.Forms.ToolStripButton();
+            this.ExpandButton = new System.Windows.Forms.ToolStripButton();
+            this.RefreshButton = new System.Windows.Forms.ToolStripButton();
+            this.SearchButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.contextMenuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -99,9 +99,9 @@
             this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.Expand,
-            this.Refresh,
-            this.Search,
+            this.ExpandButton,
+            this.RefreshButton,
+            this.SearchButton,
             this.toolStripButton1});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
@@ -109,46 +109,46 @@
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
             // 
-            // Expand
+            // ExpandButton
             // 
-            this.Expand.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.Expand.Image = ((System.Drawing.Image)(resources.GetObject("Expand.Image")));
-            this.Expand.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.Expand.Name = "Expand";
-            this.Expand.Size = new System.Drawing.Size(24, 24);
-            this.Expand.Text = "toolStripButton1";
-            this.Expand.ToolTipText = "Expand all";
-            this.Expand.Click += new System.EventHandler(this.ExpandServers_Click);
+            this.ExpandButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.ExpandButton.Image = ((System.Drawing.Image)(resources.GetObject("ExpandButton.Image")));
+            this.ExpandButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ExpandButton.Name = "ExpandButton";
+            this.ExpandButton.Size = new System.Drawing.Size(24, 24);
+            this.ExpandButton.Text = "toolStripButton1";
+            this.ExpandButton.ToolTipText = "Expand all";
+            this.ExpandButton.Click += new System.EventHandler(this.ExpandServers_Click);
             // 
-            // Refresh
+            // RefreshButton
             // 
-            this.Refresh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.Refresh.Image = global::PlexWalk.Properties.Resources.refresh;
-            this.Refresh.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.Refresh.Name = "Refresh";
-            this.Refresh.Size = new System.Drawing.Size(24, 24);
-            this.Refresh.Text = "toolStripButton2";
-            this.Refresh.ToolTipText = "Refresh";
-            this.Refresh.Click += new System.EventHandler(this.Refresh_Click);
+            this.RefreshButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.RefreshButton.Image = global::PlexWalk.Properties.Resources.refresh;
+            this.RefreshButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.RefreshButton.Name = "RefreshButton";
+            this.RefreshButton.Size = new System.Drawing.Size(24, 24);
+            this.RefreshButton.Text = "toolStripButton2";
+            this.RefreshButton.ToolTipText = "Refresh";
+            this.RefreshButton.Click += new System.EventHandler(this.Refresh_Click);
             // 
-            // Search
+            // SearchButton
             // 
-            this.Search.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.Search.Image = global::PlexWalk.Properties.Resources.search;
-            this.Search.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.Search.Name = "Search";
-            this.Search.Size = new System.Drawing.Size(24, 24);
-            this.Search.Text = "toolStripButton3";
-            this.Search.Click += new System.EventHandler(this.Search_Click_1);
+            this.SearchButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.SearchButton.Image = global::PlexWalk.Properties.Resources.search;
+            this.SearchButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SearchButton.Name = "SearchButton";
+            this.SearchButton.Size = new System.Drawing.Size(24, 24);
+            this.SearchButton.Text = "Search Movies";
+            this.SearchButton.Click += new System.EventHandler(this.Search_Click_1);
             // 
             // toolStripButton1
             // 
             this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton1.Image = global::PlexWalk.Properties.Resources._13079831461297786048_1_;
+            this.toolStripButton1.Image = global::PlexWalk.Properties.Resources.YesAnime;
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton1.Name = "toolStripButton1";
             this.toolStripButton1.Size = new System.Drawing.Size(24, 24);
-            this.toolStripButton1.Text = "toolStripButton1";
+            this.toolStripButton1.Text = "Anime!";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // BrowseForm
@@ -181,11 +181,9 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem;
         private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripButton Expand;
-#pragma warning disable CS0108 // Member hides inherited member; missing new keyword
-        private System.Windows.Forms.ToolStripButton Refresh;
-#pragma warning restore CS0108 // Member hides inherited member; missing new keyword
-        private System.Windows.Forms.ToolStripButton Search;
+        private System.Windows.Forms.ToolStripButton ExpandButton;
+        private System.Windows.Forms.ToolStripButton RefreshButton;
+        private System.Windows.Forms.ToolStripButton SearchButton;
         private System.Windows.Forms.ToolStripMenuItem playInVLCToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem downloadToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
