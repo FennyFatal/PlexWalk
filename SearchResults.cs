@@ -19,19 +19,22 @@ namespace PlexWalk
         bool AbortThreads = false;
         List<Descriptor> searches;
         string query;
-        public SearchResults(List<Descriptor> searches, string query)
+        bool use_db;
+        public SearchResults(List<Descriptor> searches, string query, bool use_db = false)
         {
             InitializeComponent();
             this.searches = searches;
             this.query = query;
             this.Text += " - " + query;
+            this.use_db = use_db;
         }
 
         private void SearchResults_Load(object sender, EventArgs e)
         {
             string db_file = "db.db";
-            if (Descriptor.sourceXmlUrl != null 
-                && Descriptor.sourceXmlUrl.ToLower().Contains("binary") 
+            if (use_db 
+                && Descriptor.sourceXmlUrl != null 
+                && Descriptor.sourceXmlUrl.ToLower().Contains("binary")
                 && PlexUtils.LoadDBResources(db_file))
             {
                 using (DbConnection cnn = System.Data.SQLite.SQLiteFactory.Instance.CreateConnection())
@@ -66,12 +69,23 @@ namespace PlexWalk
             }
             foreach (Descriptor desc in searches)
             {
-                TreeNode n = new TreeNode(desc.serverName) { Tag = desc, Name = "/search?query=" + Uri.EscapeDataString(query) };
-                n.Nodes.Add("");
-                searchTreeView.Nodes.Add(n);
+                fakeNode.Nodes.Add(new TreeNode(desc.serverName) { Tag = desc, Name = "/search?query=" + Uri.EscapeDataString(query) });
             }
-            foreach (TreeNode n in searchTreeView.Nodes)
-                n.Expand();
+            foreach (TreeNode n in fakeNode.Nodes)
+                ThreadPool.QueueUserWorkItem(delegate(object state)
+                {
+                    if (AbortThreads)
+                    {
+                        int total; int count;
+                        int max_total; int max_count;
+                        ThreadPool.GetMaxThreads(out max_count, out max_total);
+                        ThreadPool.GetAvailableThreads(out count, out total);
+                        if (count == max_count && total == max_total)
+                            AbortThreads = false;
+                        return;
+                    }
+                    PlexUtils.populateSubNodes(n, this, fakeNode);
+                });
         }
 
         delegate void ChangeNodeCallback(object sender, TreeNode src);
@@ -85,6 +99,7 @@ namespace PlexWalk
             }
             else
                 PlexUtils.populateSubNodes(src, this);
+                    
         }
 
         delegate void AddNodeCallback(TreeNode Parent, TreeNode Child);
@@ -97,7 +112,12 @@ namespace PlexWalk
                 this.Invoke(d, new object[] { Parent, Child });
             }
             else
-                Parent.Nodes.Add(Child);
+            {
+                if (Parent != fakeNode)
+                    Parent.Nodes.Add(Child);
+                else
+                    searchTreeView.Nodes.Add(Child);
+            }
         }
 
         private void searchTreeView_BeforeExpand(object sender, TreeViewCancelEventArgs e)
@@ -144,6 +164,9 @@ namespace PlexWalk
         }
 
         TreeNode selected;
+
+        private TreeNode fakeNode = new TreeNode();
+
         private void searchTreeView_MouseUp(object sender, MouseEventArgs e)
         {
             selected = ((TreeView)sender).GetNodeAt(e.Location);

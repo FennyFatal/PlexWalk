@@ -274,7 +274,7 @@ namespace PlexWalk
             return System.Text.RegularExpressions.Regex.Replace(name, invalidRegStr, "");
         }
 
-        public static void populateSubNodes(TreeNode tnode, FormInterface fi)
+        public static void populateSubNodes(TreeNode tnode, FormInterface fi, TreeNode newParent = null)
         {
             using (WebClient wc = new System.Net.WebClient())
             {
@@ -368,7 +368,7 @@ namespace PlexWalk
                                 if (seasonNumber != null)
                                     ((Descriptor)node.Tag).seasonNumber = seasonNumber;
                                 node.Nodes.Add(new TreeNode());
-                                fi.AddNode(tnode, node);
+                                fi.AddNode(newParent == null ? tnode : newParent, node);
                             }
                         }
                     }
@@ -443,7 +443,7 @@ namespace PlexWalk
 
                             }
                             while (reader.ReadToNextSibling("Part"));
-                            fi.AddNode(tnode, node);
+                            fi.AddNode(newParent == null ? tnode : newParent, node);
                         }
                     }
                 }
@@ -637,7 +637,7 @@ namespace PlexWalk
                                                         )
                                                     }
                                                 };
-                                                fi.AddNode(tnode, subNode);
+                                                fi.AddNode(newParent == null ? tnode : newParent, subNode);
                                             }
                                             while (reader.ReadToFollowing("Stream"));
                                         }
@@ -648,7 +648,7 @@ namespace PlexWalk
                             while (reader.ReadToNextSibling("Part"));
                             if (node != null)
                             {
-                                fi.AddNode(tnode, node);
+                                fi.AddNode(newParent == null ? tnode : newParent, node);
                             }
                         }
                     }
@@ -734,7 +734,7 @@ namespace PlexWalk
                                 node.Nodes.Add(subnode);
                             }
                             while (reader.ReadToNextSibling("Part"));
-                            fi.AddNode(tnode, node);
+                            fi.AddNode(newParent == null ? tnode : newParent, node);
                         }
                     }
                 }
@@ -745,7 +745,7 @@ namespace PlexWalk
                 var node = new TreeNode("Search") { Tag = tnode.Tag, Name = "/search" };
                 ((Descriptor)node.Tag).isSearchNode = true;
                 node.Nodes.Add(new TreeNode());
-                fi.AddNode(tnode, node);
+                fi.AddNode(newParent == null ? tnode : newParent, node);
             }
         }
         public static Descriptor[] getDownloads(TreeNode nodes, FormInterface fi)
