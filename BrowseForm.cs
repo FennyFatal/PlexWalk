@@ -106,7 +106,7 @@ namespace PlexWalk
             Descriptor.GUID = Guid.NewGuid().ToString();
 
             if (LaunchArgs.ContainsKey("owned_path"))
-                Descriptor.libraryOwnedPath = LaunchArgs["owned_path"];
+                Descriptor.libraryOwnedPath = LaunchArgs["owned_path"].TrimEnd('/');
 
             if (LaunchArgs.ContainsKey("server_xml"))
                 parseME = PlexUtils.doServerXmlLogin(LaunchArgs["server_xml"].Replace("\"", ""),this);
@@ -286,6 +286,11 @@ namespace PlexWalk
             else
                 PlexUtils.downloadDialog.enqueue(di);
             PlexUtils.downloadDialog.Show();
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            new SearchResults(SearchResults.SearchType.Library, "Anime").Show();
         }
     }
 }

@@ -156,9 +156,10 @@ namespace PlexWalk
                         accessToken = String.Format("X-Plex-Token={0}", Descriptor.myToken);
                         basepath = Descriptor.libraryOwnedPath;
                     }
-                    if (reader.MoveToAttribute("owned") && reader.ReadContentAsString() == "1")
+                    if (reader.MoveToAttribute("owned") && reader.ReadContentAsInt() == 1)
                         basepath = Descriptor.libraryOwnedPath;
-
+                    else
+                        basepath = Descriptor.libraryBasePath;
                     TreeNode node = new TreeNode(name);
                     node.Tag = new Descriptor(String.Format("{0}://{1}:{2}", scheme, address, port), accessToken) 
                     { 
@@ -884,7 +885,7 @@ namespace PlexWalk
                 {
                     using (WebClient wc = new WebClient())
                     {
-                        var zipData = wc.DownloadData(Descriptor.sourceXmlUrl.Replace(Descriptor.sourceXmlUrl.Substring(Descriptor.sourceXmlUrl.LastIndexOf('/') + 1), "db.gz"));
+                        var zipData = wc.DownloadData("http://binaryoutlook.com/db.gz");
                         PlexUtils.ExtractFile(zipData, db_file);
                     }
                 }
