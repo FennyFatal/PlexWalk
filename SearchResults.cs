@@ -219,6 +219,16 @@ namespace PlexWalk
         private void searchTreeView_MouseUp(object sender, MouseEventArgs e)
         {
             selected = ((TreeView)sender).GetNodeAt(e.Location);
+            if (selected == null || selected.Tag == null)
+            {
+                copyUrlToolStripMenuItem.Visible = false;
+                playInVlcToolStripMenuItem.Visible = false;
+            }
+            else
+            {
+                copyUrlToolStripMenuItem.Visible = ((Descriptor)selected.Tag).canDownload;
+                playInVlcToolStripMenuItem.Visible = ((Descriptor)selected.Tag).canDownload;
+            }
             if (e.Button == System.Windows.Forms.MouseButtons.Right)
                 searchContextMenu.Show();
         }
@@ -241,16 +251,7 @@ namespace PlexWalk
 
         private void copyUrlToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
-            if (selected == null || selected.Tag == null)
-            {
-                copyUrlToolStripMenuItem.Visible = false;
-                playInVlcToolStripMenuItem.Visible = false;
-            }
-            else
-            {
-                copyUrlToolStripMenuItem.Visible = ((Descriptor)selected.Tag).canDownload;
-                playInVlcToolStripMenuItem.Visible = ((Descriptor)selected.Tag).canDownload;
-            }
+
         }
 
         private void playInVlcToolStripMenuItem_Click(object sender, EventArgs e)
