@@ -209,10 +209,21 @@ namespace PlexWalk
                         }
                         else
                         {
-                            if (!doLogin(wc,rfi))
+                            Login loginform = new Login();
+                            loginform.ShowDialog();
+                            if (loginform.DialogResult == System.Windows.Forms.DialogResult.Cancel)
                             {
+                                rfi.CloseForm();
                                 return parseME;
                             }
+                            if (loginform.XmlUri == null)
+                            {
+                                wc.Credentials = loginform.creds;
+                                wc.Headers[HttpRequestHeader.Authorization] = string.Format("Basic {0}", loginform.headerAuth);
+                                rfi.SetRefreshMethod(RefreshMethod.Login);
+                            }
+                            else
+                                return doServerXmlLogin(loginform.XmlUri, rfi);
                         }
                         parseME = wc.DownloadString("https://plex.tv/pms/servers.xml");
                         wc.Headers["X-Plex-Client-Identifier"] = Descriptor.GUID;
@@ -237,21 +248,6 @@ namespace PlexWalk
                 Convert.ToBase64String(Encoding.ASCII.GetBytes(args["username"] + ":" + args["password"]))
             );
             rfi.SetRefreshMethod(RefreshMethod.LoginCLI);
-        }
-
-        static private bool doLogin(WebClient wc, RootFormInterface rfi)
-        {
-            Login loginform = new Login();
-            loginform.ShowDialog();
-            if (loginform.DialogResult == System.Windows.Forms.DialogResult.Cancel)
-            {
-                rfi.CloseForm();
-                return false;
-            }
-            wc.Credentials = loginform.creds;
-            wc.Headers[HttpRequestHeader.Authorization] = string.Format("Basic {0}", loginform.headerAuth);
-            rfi.SetRefreshMethod(RefreshMethod.Login);
-            return true;
         }
 
         static private string parseLogin(string login_xml)

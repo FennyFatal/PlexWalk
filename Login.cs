@@ -13,6 +13,7 @@ namespace PlexWalk
     public partial class Login : Form
     {
         public ICredentials creds;
+        public string XmlUri;
         public string headerAuth;
 
         public Login()
@@ -25,10 +26,20 @@ namespace PlexWalk
         {
             acceptCreds();
         }
+
         private void acceptCreds()
         {
-            creds = new NetworkCredential(username.Text, password.Text);
-            headerAuth = Convert.ToBase64String(Encoding.ASCII.GetBytes(username.Text + ":" + password.Text));
+            if (!xmlbox.Checked)
+            {
+                XmlUri = null;
+                creds = new NetworkCredential(username.Text, password.Text);
+                headerAuth = Convert.ToBase64String(Encoding.ASCII.GetBytes(username.Text + ":" + password.Text));
+            }
+            else
+            {
+                creds = null;
+                XmlUri = xmlurl.Text;
+            }
             DialogResult = System.Windows.Forms.DialogResult.OK;
             Close();
         }
@@ -41,30 +52,16 @@ namespace PlexWalk
 
         private void xmlbox_Checked(object sender, EventArgs e)
         {
-            if (((CheckBox)sender).Checked)
-            {
-                xmlurl.Visible = true;
-                lblUN.Visible = false;
-                lblPW.Visible = false;
-                username.Visible = false;
-                password.Visible = false;
-                username.Enabled = false;
-                password.Enabled = false;
-                xmltext1.Visible = false;
-                xmltext2.Visible = true;
-            }
-            else
-            {
-                xmlurl.Visible = false;
-                lblUN.Visible = true;
-                lblPW.Visible = true;
-                username.Visible = true;
-                password.Visible = true;
-                username.Enabled = true;
-                password.Enabled = true;
-                xmltext1.Visible = true;
-                xmltext2.Visible = false;
-            }
+            bool Checked = ((CheckBox)sender).Checked;
+            xmlurl.Visible = Checked;
+            lblUN.Visible = !Checked;
+            lblPW.Visible = !Checked;
+            username.Visible = !Checked;
+            password.Visible = !Checked;
+            username.Enabled = !Checked;
+            password.Enabled = !Checked;
+            xmltext1.Visible = !Checked;
+            xmltext2.Visible = Checked;
         }
     }
 }
