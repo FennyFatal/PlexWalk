@@ -16,8 +16,11 @@ namespace PlexWalk
 {
     public partial class SearchResults : Form, FormInterface
     {
+        string title;
+        int count = 0;
         bool AbortThreads = false;
         List<Descriptor> searches;
+        List<TreeNode> results = new List<TreeNode>();
         string query;
         bool use_db;
         public SearchResults(List<Descriptor> searches, string query, bool use_db = false)
@@ -25,7 +28,8 @@ namespace PlexWalk
             InitializeComponent();
             this.searches = searches;
             this.query = query;
-            this.Text += " - " + query;
+            title = this.Text + " - " + query;
+            this.Text = title + " (" + count + "/" + searches.Count + ")";
             this.use_db = use_db;
         }
 
@@ -67,11 +71,12 @@ namespace PlexWalk
                 }
                 return;
             }
+            var tn = new TreeNode();
             foreach (Descriptor desc in searches)
             {
-                fakeNode.Nodes.Add(new TreeNode(desc.serverName) { Tag = desc, Name = "/search?query=" + Uri.EscapeDataString(query) });
+                tn.Nodes.Add(new TreeNode(desc.serverName) { Tag = desc, Name = "/search?query=" + Uri.EscapeDataString(query) });
             }
-            foreach (TreeNode n in fakeNode.Nodes)
+            foreach (TreeNode n in tn.Nodes)
                 ThreadPool.QueueUserWorkItem(delegate(object state)
                 {
                     if (AbortThreads)
@@ -84,8 +89,46 @@ namespace PlexWalk
                             AbortThreads = false;
                         return;
                     }
-                    PlexUtils.populateSubNodes(n, this, fakeNode);
+                    try
+                    {
+                        PlexUtils.populateSubNodes(n, this, fakeNode);
+                        
+                    }
+                    catch { }
+                    UpdateSearchStatus();
                 });
+        }
+
+        delegate void AnyDelegate();
+
+        private void UpdateSearchStatus()
+        {
+            if (!this.InvokeRequired)
+            {
+                this.Text = title + " (" + count++ + "/" + searches.Count + ")";
+            }
+            else
+            {
+                try
+                {
+                    this.Invoke(new AnyDelegate(UpdateSearchStatus));
+                }
+                catch { }
+            }
+        }
+
+        private void waitForExit()
+        {
+            int total; int count; int max_total; int max_count;
+            while (!AbortThreads)
+            {
+                Thread.Sleep(1);
+                Application.DoEvents();
+                ThreadPool.GetMaxThreads(out max_count, out max_total);
+                ThreadPool.GetAvailableThreads(out count, out total);
+                if (count == max_count && total == max_total)
+                    break;
+            }
         }
 
         delegate void ChangeNodeCallback(object sender, TreeNode src);
@@ -114,9 +157,15 @@ namespace PlexWalk
             else
             {
                 if (Parent != fakeNode)
+                {
                     Parent.Nodes.Add(Child);
+                }
                 else
+                {
+                    Thread.Sleep(1);
+                    Application.DoEvents();
                     searchTreeView.Nodes.Add(Child);
+                }
             }
         }
 
