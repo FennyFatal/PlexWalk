@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.IO.Compression;
 using System.IO;
 using System.Data.Common;
+using System.Json;
 
 namespace PlexWalk
 {
@@ -29,7 +30,8 @@ namespace PlexWalk
         public enum SearchType
         {
             Library,
-            Movie
+            Movie,
+            JsonSearchTestCase
         }
 
         public SearchResults(SearchType s, string query)
@@ -37,7 +39,16 @@ namespace PlexWalk
             InitializeComponent();
             searchType = s;
             this.query = query;
-            use_db = true;
+            switch (s)
+            {
+                case SearchType.Library:
+                case SearchType.Movie:
+                    use_db = true;
+                    break;
+                case SearchType.JsonSearchTestCase:
+                    use_db = false;
+                    break;
+            }
         }
 
         public SearchResults(List<Descriptor> searches, string query, bool use_db = true)
@@ -153,32 +164,140 @@ namespace PlexWalk
                 }
                 return;
             }
-            var tn = new TreeNode();
-            foreach (Descriptor desc in searches)
+            if (searchType == SearchType.JsonSearchTestCase)
             {
-                tn.Nodes.Add(new TreeNode(desc.serverName) { Tag = desc, Name = "/search?query=" + Uri.EscapeDataString(query) });
-            }
-            foreach (TreeNode n in tn.Nodes)
-                ThreadPool.QueueUserWorkItem(delegate(object state)
+                using (WebClient wc = new WebClient())
                 {
-                    if (AbortThreads)
-                    {
-                        int total; int count;
-                        int max_total; int max_count;
-                        ThreadPool.GetMaxThreads(out max_count, out max_total);
-                        ThreadPool.GetAvailableThreads(out count, out total);
-                        if (count == max_count && total == max_total)
-                            AbortThreads = false;
-                        return;
-                    }
+                    var result = wc.DownloadString("https://gist.githubusercontent.com/FennyFatal/29e83e794f16cec53cb4de82e1a85165/raw/069ccb420b87d0375aeb0c62afafdbb80ce2a7c8/search_response.json");
                     try
                     {
-                        PlexUtils.populateSubNodes(n, this, fakeNode);
-                        
+                        parseJsonResponse(result);
                     }
                     catch { }
-                    UpdateSearchStatus();
-                });
+                }
+            }
+            else
+            {
+                var tn = new TreeNode();
+                foreach (Descriptor desc in searches)
+                {
+                    tn.Nodes.Add(new TreeNode(desc.serverName) { Tag = desc, Name = "/search?query=" + Uri.EscapeDataString(query) });
+                }
+                foreach (TreeNode n in tn.Nodes)
+                    ThreadPool.QueueUserWorkItem(delegate (object state)
+                    {
+                        if (AbortThreads)
+                        {
+                            ThreadPool.GetMaxThreads(out int max_count, out int max_total);
+                            ThreadPool.GetAvailableThreads(out int count, out int total);
+                            if (count == max_count && total == max_total)
+                                AbortThreads = false;
+                            return;
+                        }
+                        try
+                        {
+                            PlexUtils.populateSubNodes(n, this, fakeNode);
+
+                        }
+                        catch { }
+                        UpdateSearchStatus();
+                    });
+            }
+        }
+
+        private void parseJsonResponse(string result)
+        {
+            char[] delims = "\" ".ToCharArray();
+            var value = System.Json.JsonValue.Parse(result);
+            #region Directory
+            foreach (var dir in value["Directory"])
+            {
+                tryReadServerInfo(dir.Value, out string basePath, out string token);
+
+                if (basePath == null || token == null)
+                    continue;
+
+                string title = (string)dir.Value.ValueOrDefault("_title").ReadAs(typeof(String), null);
+                string type = (string)dir.Value.ValueOrDefault("_type").ReadAs(typeof(String), null);
+                string keyVal = (string)dir.Value.ValueOrDefault("_key").ReadAs(typeof(String), null);
+                string serverName = (string)dir.Value.ValueOrDefault("_sourceTitle").ReadAs(typeof(String), null);
+                string librarySectionTitle = (string)dir.Value.ValueOrDefault("_librarySectionTitle").ReadAs(typeof(String), null);
+                string librarySectionID = (string)dir.Value.ValueOrDefault("_librarySectionID").ReadAs(typeof(String), null);
+                TreeNode n = new TreeNode(title)
+                {
+                    Tag = new Descriptor(basePath, token)
+                    {
+                    },
+                    Name = keyVal
+                };
+                n.Nodes.Add("");
+                AddNode(fakeNode, n);
+            }
+            #endregion
+            #region Video
+            foreach (var video in value["Video"])
+            {
+                tryReadServerInfo(video.Value, out string basePath, out string token);
+                if (basePath == null || token == null)
+                    continue;
+
+                string title = (string)video.Value.ValueOrDefault("_title").ReadAs(typeof(String), null);
+                string type = (string)video.Value.ValueOrDefault("_type").ReadAs(typeof(String), null);
+                string duration = (string)video.Value.ValueOrDefault("_duration").ReadAs(typeof(String), null);
+                string keyVal = (string)video.Value.ValueOrDefault("_key").ReadAs(typeof(String), null);
+                string serverTitle = (string)video.Value.ValueOrDefault("_sourceTitle").ReadAs(typeof(String), null);
+                foreach (var media in video.Value["Media"])
+                {
+                    string width = (string)media.Value.ValueOrDefault("_width").ReadAs(typeof(String), null);
+                    string height = (string)media.Value.ValueOrDefault("_height").ReadAs(typeof(String), null);
+                    string container = (string)media.Value.ValueOrDefault("_container").ReadAs(typeof(String), null);
+                    duration = (string)media.Value.ValueOrDefault("_duration").ReadAs(typeof(String), null);
+                    foreach (var part in media.Value["Part"])
+                    {
+                        string size = (string)part.Value.ValueOrDefault("_size").ReadAs(typeof(String), null);
+                        duration = (string)part.Value.ValueOrDefault("_duration").ReadAs(typeof(String), null);
+                        string pKey = (string)part.Value.ValueOrDefault("_key").ReadAs(typeof(String), null);
+                        string file = (string)part.Value.ValueOrDefault("_file").ReadAs(typeof(String), null);
+                        duration = duration == null ? "" : String.Format(" ({0})", TimeSpan.FromMilliseconds(Double.Parse(duration)).ToString(@"hh\:mm\:ss"));
+                        TreeNode node = new TreeNode(title + (duration == null ? "" : duration))
+                        {
+                            Tag = new Descriptor(basePath, token)
+                            {
+                                canDownload = false
+                            },
+                            Name = keyVal
+                        };
+                        TreeNode subNode = new TreeNode(String.Format("Download {0}", file.Substring(file.LastIndexOf(@"\") + 1).Substring(file.LastIndexOf(@"/") + 1)))
+                        {
+                            Tag = new Descriptor((Descriptor)node.Tag)
+                            {
+                                canDownload = true
+                            },
+                            Name = pKey
+                        };
+                        node.Nodes.Add(subNode);
+                        AddNode(fakeNode, node);
+                    }
+                }
+            }
+            #endregion
+        }
+
+        private void tryReadServerInfo(JsonValue value, out string basePath, out string token)
+        {
+            basePath = null;
+            token = null;
+            var server = value.ValueOrDefault("Server");
+            try
+            {
+                basePath = String.Format("{0}://{1}:{2}",
+                    server["_scheme"].ReadAs(typeof(String)),
+                    server["_address"].ReadAs(typeof(String)),
+                    server["_port"].ReadAs(typeof(String))
+                    );
+                token = String.Format("X-Plex-Token={0}", (string)server["_token"].ReadAs(typeof(String)));
+            }
+            catch { }
         }
 
         delegate void AnyDelegate();
