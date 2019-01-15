@@ -159,13 +159,13 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(43)))), ((int)(((byte)(48)))), ((int)(((byte)(52)))));
             this.ClientSize = new System.Drawing.Size(388, 445);
-            this.Controls.Add(this.Speed);
             this.Controls.Add(this.OverallProgress);
             this.Controls.Add(this.CurrentProgress);
             this.Controls.Add(this.ExitButton);
             this.Controls.Add(this.StartButton);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.DownloadList);
+            this.Controls.Add(this.Speed);
             this.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
