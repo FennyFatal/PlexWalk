@@ -182,7 +182,10 @@ namespace PlexWalk
                 this.Invoke(d, new object[] { sender, src });
             }
             else
+            {
+                Application.DoEvents();
                 src.Nodes.Clear();
+            }
         }
 
         delegate void GenericCallback();
@@ -197,7 +200,10 @@ namespace PlexWalk
                 this.Invoke(d, new object[] { Parent, Child });
             }
             else
+            {
+                Application.DoEvents();
                 Parent.Nodes.Add(Child);
+            }
         }
 
         private void treeView1_DoubleClick(object sender, EventArgs e)
