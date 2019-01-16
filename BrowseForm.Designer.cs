@@ -69,27 +69,27 @@
             this.playInVLCToolStripMenuItem,
             this.downloadToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(134, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(150, 76);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // refreshToolStripMenuItem
             // 
             this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
+            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(149, 24);
             this.refreshToolStripMenuItem.Text = "Refresh";
             this.refreshToolStripMenuItem.Click += new System.EventHandler(this.RefreshToolStripMenuItem_Click);
             // 
             // playInVLCToolStripMenuItem
             // 
             this.playInVLCToolStripMenuItem.Name = "playInVLCToolStripMenuItem";
-            this.playInVLCToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
+            this.playInVLCToolStripMenuItem.Size = new System.Drawing.Size(149, 24);
             this.playInVLCToolStripMenuItem.Text = "Play in VLC";
             this.playInVLCToolStripMenuItem.Click += new System.EventHandler(this.playInVLCToolStripMenuItem_Click);
             // 
             // downloadToolStripMenuItem
             // 
             this.downloadToolStripMenuItem.Name = "downloadToolStripMenuItem";
-            this.downloadToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
+            this.downloadToolStripMenuItem.Size = new System.Drawing.Size(149, 24);
             this.downloadToolStripMenuItem.Text = "Download";
             this.downloadToolStripMenuItem.Click += new System.EventHandler(this.downloadToolStripMenuItem_Click);
             // 
@@ -153,7 +153,7 @@
             // 
             // BrowseForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(43)))), ((int)(((byte)(48)))), ((int)(((byte)(52)))));
             this.ClientSize = new System.Drawing.Size(565, 532);

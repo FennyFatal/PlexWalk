@@ -292,5 +292,10 @@ namespace PlexWalk
         {
             new SearchResults(SearchResults.SearchType.Library, "Anime").Show();
         }
+
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            new SearchResults(SearchResults.SearchType.JsonSearchTestCase, "Anime").Show();
+        }
     }
 }
