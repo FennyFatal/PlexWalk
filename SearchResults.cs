@@ -55,7 +55,6 @@ namespace PlexWalk
             this.searches = searches;
             this.query = query;
             title = this.Text + " - " + query;
-            this.Text = title + " (" + count + "/" + searches.Count + ")";
             this.use_db = use_db;
         }
 
@@ -178,6 +177,7 @@ namespace PlexWalk
             }
             else
             {
+                this.Text = title + " (" + 0 + "/" + searches.Count + ")";
                 var tn = new TreeNode();
                 foreach (Descriptor desc in searches)
                 {
