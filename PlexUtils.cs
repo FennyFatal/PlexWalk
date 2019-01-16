@@ -858,7 +858,7 @@ namespace PlexWalk
         }
 
         private static bool GetDB = false;
-
+        /*
         public static bool LoadDBResources(string db_file)
         {
             string sqliteDllFile = "SQLite.Interop.dll";
@@ -889,5 +889,6 @@ namespace PlexWalk
             }
             return true;
         }
+         */
     }
 }
