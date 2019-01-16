@@ -43,15 +43,13 @@ namespace PlexWalk
             {
                 case SearchType.Library:
                 case SearchType.Movie:
-                    use_db = true;
-                    break;
                 case SearchType.JsonSearchTestCase:
                     use_db = false;
                     break;
             }
         }
 
-        public SearchResults(List<Descriptor> searches, string query, bool use_db = true)
+        public SearchResults(List<Descriptor> searches, string query, bool use_db = false)
         {
             InitializeComponent();
             this.searches = searches;
@@ -63,6 +61,7 @@ namespace PlexWalk
 
         private void SearchResults_Load(object sender, EventArgs e)
         {
+            /*
             string db_file = "db.db";
             if (use_db 
                 && Descriptor.sourceXmlUrl != null 
@@ -164,17 +163,18 @@ namespace PlexWalk
                 }
                 return;
             }
-            if (searchType == SearchType.JsonSearchTestCase)
+             */
+            if (searchType == SearchType.Movie || SearchType.Library == searchType)
             {
-                using (WebClient wc = new WebClient())
-                {
-                    var result = wc.DownloadString("https://gist.githubusercontent.com/FennyFatal/29e83e794f16cec53cb4de82e1a85165/raw/069ccb420b87d0375aeb0c62afafdbb80ce2a7c8/search_response.json");
-                    try
+                    ThreadPool.QueueUserWorkItem(delegate(object state)
                     {
+                        string result = null;
+                        using (WebClient wc = new WebClient())
+                        {
+                            result = wc.DownloadString("http://binaryoutlook.com:8080/?search=" + Uri.EscapeDataString(query) + (searchType == SearchType.Movie ? "&Movies=true" : "") + (searchType == SearchType.Library ? "&Sections=true" : ""));
+                        }
                         parseJsonResponse(result);
-                    }
-                    catch { }
-                }
+                    });
             }
             else
             {
@@ -188,8 +188,9 @@ namespace PlexWalk
                     {
                         if (AbortThreads)
                         {
-                            ThreadPool.GetMaxThreads(out int max_count, out int max_total);
-                            ThreadPool.GetAvailableThreads(out int count, out int total);
+                            int max_count, max_total, count, total;
+                            ThreadPool.GetMaxThreads(out max_count, out max_total);
+                            ThreadPool.GetAvailableThreads(out count, out total);
                             if (count == max_count && total == max_total)
                                 AbortThreads = false;
                             return;
@@ -207,80 +208,96 @@ namespace PlexWalk
 
         private void parseJsonResponse(string result)
         {
-            char[] delims = "\" ".ToCharArray();
             var value = System.Json.JsonValue.Parse(result);
-            #region Directory
-            foreach (var dir in value["Directory"])
+            try
             {
-                tryReadServerInfo(dir.Value, out string basePath, out string token);
-
-                if (basePath == null || token == null)
-                    continue;
-
-                string title = (string)dir.Value.ValueOrDefault("_title").ReadAs(typeof(String), null);
-                string type = (string)dir.Value.ValueOrDefault("_type").ReadAs(typeof(String), null);
-                string keyVal = (string)dir.Value.ValueOrDefault("_key").ReadAs(typeof(String), null);
-                string serverName = (string)dir.Value.ValueOrDefault("_sourceTitle").ReadAs(typeof(String), null);
-                string librarySectionTitle = (string)dir.Value.ValueOrDefault("_librarySectionTitle").ReadAs(typeof(String), null);
-                string librarySectionID = (string)dir.Value.ValueOrDefault("_librarySectionID").ReadAs(typeof(String), null);
-                TreeNode n = new TreeNode(title)
+                #region Directory
+                foreach (var dir in value["Directory"])
                 {
-                    Tag = new Descriptor(basePath, token)
+                    if (AbortThreads)
+                        return;
+                    string basePath, token;
+                    tryReadServerInfo(dir.Value, out basePath, out token);
+
+                    if (basePath == null || token == null)
+                        continue;
+
+                    string title = (string)dir.Value.ValueOrDefault("_title").ReadAs(typeof(String), null);
+                    string type = (string)dir.Value.ValueOrDefault("_type").ReadAs(typeof(String), null);
+                    string keyVal = (string)dir.Value.ValueOrDefault("_key").ReadAs(typeof(String), null);
+                    string serverName = (string)dir.Value.ValueOrDefault("_sourceTitle").ReadAs(typeof(String), null);
+                    string librarySectionTitle = (string)dir.Value.ValueOrDefault("_librarySectionTitle").ReadAs(typeof(String), null);
+                    string librarySectionID = (string)dir.Value.ValueOrDefault("_librarySectionID").ReadAs(typeof(String), null);
+                    TreeNode n = new TreeNode(title)
                     {
-                    },
-                    Name = keyVal
-                };
-                n.Nodes.Add("");
-                AddNode(fakeNode, n);
-            }
-            #endregion
-            #region Video
-            foreach (var video in value["Video"])
+                        Tag = new Descriptor(basePath, token)
+                        {
+                        },
+                        Name = keyVal
+                    };
+                    n.Nodes.Add("");
+                    AddNode(fakeNode, n);
+                }
+                #endregion
+            } catch { }
+            try
             {
-                tryReadServerInfo(video.Value, out string basePath, out string token);
-                if (basePath == null || token == null)
-                    continue;
-
-                string title = (string)video.Value.ValueOrDefault("_title").ReadAs(typeof(String), null);
-                string type = (string)video.Value.ValueOrDefault("_type").ReadAs(typeof(String), null);
-                string duration = (string)video.Value.ValueOrDefault("_duration").ReadAs(typeof(String), null);
-                string keyVal = (string)video.Value.ValueOrDefault("_key").ReadAs(typeof(String), null);
-                string serverTitle = (string)video.Value.ValueOrDefault("_sourceTitle").ReadAs(typeof(String), null);
-                foreach (var media in video.Value["Media"])
+                #region Video
+                foreach (var video in value["Video"])
                 {
-                    string width = (string)media.Value.ValueOrDefault("_width").ReadAs(typeof(String), null);
-                    string height = (string)media.Value.ValueOrDefault("_height").ReadAs(typeof(String), null);
-                    string container = (string)media.Value.ValueOrDefault("_container").ReadAs(typeof(String), null);
-                    duration = (string)media.Value.ValueOrDefault("_duration").ReadAs(typeof(String), null);
-                    foreach (var part in media.Value["Part"])
+                    if (AbortThreads)
+                        return;
+                    string basePath, token;
+                    tryReadServerInfo(video.Value, out basePath, out token);
+                    if (basePath == null || token == null)
+                        continue;
+
+                    string title = (string)video.Value.ValueOrDefault("_title").ReadAs(typeof(String), null);
+                    string type = (string)video.Value.ValueOrDefault("_type").ReadAs(typeof(String), null);
+                    string duration = (string)video.Value.ValueOrDefault("_duration").ReadAs(typeof(String), null);
+                    string keyVal = (string)video.Value.ValueOrDefault("_key").ReadAs(typeof(String), null);
+                    string serverTitle = (string)video.Value.ValueOrDefault("_sourceTitle").ReadAs(typeof(String), null);
+                    foreach (var media in video.Value["Media"])
                     {
-                        string size = (string)part.Value.ValueOrDefault("_size").ReadAs(typeof(String), null);
-                        duration = (string)part.Value.ValueOrDefault("_duration").ReadAs(typeof(String), null);
-                        string pKey = (string)part.Value.ValueOrDefault("_key").ReadAs(typeof(String), null);
-                        string file = (string)part.Value.ValueOrDefault("_file").ReadAs(typeof(String), null);
-                        duration = duration == null ? "" : String.Format(" ({0})", TimeSpan.FromMilliseconds(Double.Parse(duration)).ToString(@"hh\:mm\:ss"));
-                        TreeNode node = new TreeNode(title + (duration == null ? "" : duration))
+                        string width = (string)media.Value.ValueOrDefault("_width").ReadAs(typeof(String), null);
+                        string height = (string)media.Value.ValueOrDefault("_height").ReadAs(typeof(String), null);
+                        string container = (string)media.Value.ValueOrDefault("_container").ReadAs(typeof(String), null);
+                        duration = (string)media.Value.ValueOrDefault("_duration").ReadAs(typeof(String), null);
+                        foreach (var part in media.Value["Part"])
                         {
-                            Tag = new Descriptor(basePath, token)
+                            string size = (string)part.Value.ValueOrDefault("_size").ReadAs(typeof(String), null);
+                            duration = (string)part.Value.ValueOrDefault("_duration").ReadAs(typeof(String), null);
+                            string pKey = (string)part.Value.ValueOrDefault("_key").ReadAs(typeof(String), null);
+                            string file = (string)part.Value.ValueOrDefault("_file").ReadAs(typeof(String), null);
+                            duration = duration == null ? "" : String.Format(" ({0})", TimeSpan.FromMilliseconds(Double.Parse(duration)).ToString(@"hh\:mm\:ss"));
+                            TreeNode node = new TreeNode(title + (duration == null ? "" : duration))
                             {
-                                canDownload = false
-                            },
-                            Name = keyVal
-                        };
-                        TreeNode subNode = new TreeNode(String.Format("Download {0}", file.Substring(file.LastIndexOf(@"\") + 1).Substring(file.LastIndexOf(@"/") + 1)))
-                        {
-                            Tag = new Descriptor((Descriptor)node.Tag)
+                                Tag = new Descriptor(basePath, token)
+                                {
+                                    canDownload = false
+                                },
+                                Name = keyVal
+                            };
+                            string EndPart = file.Substring(file.LastIndexOf(@"\") + 1).Substring(file.LastIndexOf(@"/") + 1);
+                            TreeNode subNode = new TreeNode(String.Format("Download {0}", EndPart))
                             {
-                                canDownload = true
-                            },
-                            Name = pKey
-                        };
-                        node.Nodes.Add(subNode);
-                        AddNode(fakeNode, node);
+                                Tag = new Descriptor((Descriptor)node.Tag)
+                                {
+                                    canDownload = true,
+                                    downloadUrl = string.Format("{0}{1}?{2}"
+                                    , basePath
+                                    , pKey.Replace("file"
+                                    , Uri.EscapeDataString(EndPart.Remove(EndPart.LastIndexOf('.')))), token)
+                                },
+                                Name = pKey
+                            };
+                            node.Nodes.Add(subNode);
+                            AddNode(fakeNode, node);
+                        }
                     }
                 }
-            }
-            #endregion
+                #endregion
+            } catch { }
         }
 
         private void tryReadServerInfo(JsonValue value, out string basePath, out string token)
