@@ -39,7 +39,8 @@
             this.ExpandButton = new System.Windows.Forms.ToolStripButton();
             this.RefreshButton = new System.Windows.Forms.ToolStripButton();
             this.SearchButton = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.AnimeButton = new System.Windows.Forms.ToolStripButton();
+            this.LogOutButton = new System.Windows.Forms.ToolStripButton();
             this.contextMenuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -102,7 +103,8 @@
             this.ExpandButton,
             this.RefreshButton,
             this.SearchButton,
-            this.toolStripButton1});
+            this.AnimeButton,
+            this.LogOutButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(565, 27);
@@ -141,15 +143,25 @@
             this.SearchButton.Text = "Search Movies";
             this.SearchButton.Click += new System.EventHandler(this.Search_Click_1);
             // 
-            // toolStripButton1
+            // AnimeButton
             // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton1.Image = global::PlexWalk.Properties.Resources.YesAnime;
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(24, 24);
-            this.toolStripButton1.Text = "Anime!";
-            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
+            this.AnimeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.AnimeButton.Image = global::PlexWalk.Properties.Resources.YesAnime;
+            this.AnimeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.AnimeButton.Name = "AnimeButton";
+            this.AnimeButton.Size = new System.Drawing.Size(24, 24);
+            this.AnimeButton.Text = "Anime!";
+            this.AnimeButton.Click += new System.EventHandler(this.AnimeButton_Click);
+            // 
+            // LogOutButton
+            // 
+            this.LogOutButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.LogOutButton.Image = ((System.Drawing.Image)(resources.GetObject("LogOutButton.Image")));
+            this.LogOutButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.LogOutButton.Name = "LogOutButton";
+            this.LogOutButton.Size = new System.Drawing.Size(66, 24);
+            this.LogOutButton.Text = "Log Out";
+            this.LogOutButton.Click += new System.EventHandler(this.LogoutButton_Click);
             // 
             // BrowseForm
             // 
@@ -186,7 +198,8 @@
         private System.Windows.Forms.ToolStripButton SearchButton;
         private System.Windows.Forms.ToolStripMenuItem playInVLCToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem downloadToolStripMenuItem;
-        private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.ToolStripButton AnimeButton;
+        private System.Windows.Forms.ToolStripButton LogOutButton;
     }
 }
 

@@ -15,6 +15,7 @@ namespace PlexWalk
         public ICredentials creds;
         public string XmlUri;
         public string headerAuth;
+        public bool saveCredential = false;
 
         public Login()
         {
@@ -62,6 +63,11 @@ namespace PlexWalk
             password.Enabled = !Checked;
             xmltext1.Visible = !Checked;
             xmltext2.Visible = Checked;
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            this.saveCredential = ((CheckBox)sender).Checked;
         }
     }
 }

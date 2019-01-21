@@ -39,6 +39,8 @@
             this.username = new System.Windows.Forms.TextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.btnLogin = new System.Windows.Forms.Button();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -46,7 +48,7 @@
             // 
             this.xmltext2.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xmltext2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(139)))), ((int)(((byte)(140)))), ((int)(((byte)(139)))));
-            this.xmltext2.Location = new System.Drawing.Point(-4, 263);
+            this.xmltext2.Location = new System.Drawing.Point(-4, 306);
             this.xmltext2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.xmltext2.Name = "xmltext2";
             this.xmltext2.Size = new System.Drawing.Size(204, 16);
@@ -61,8 +63,8 @@
             this.xmlurl.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.xmlurl.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xmlurl.ForeColor = System.Drawing.Color.White;
-            this.xmlurl.Location = new System.Drawing.Point(0, 305);
-            this.xmlurl.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.xmlurl.Location = new System.Drawing.Point(0, 348);
+            this.xmlurl.Margin = new System.Windows.Forms.Padding(4);
             this.xmlurl.Name = "xmlurl";
             this.xmlurl.Size = new System.Drawing.Size(192, 29);
             this.xmlurl.TabIndex = 19;
@@ -73,8 +75,8 @@
             // 
             this.xmlbox.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.xmlbox.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.xmlbox.Location = new System.Drawing.Point(0, 281);
-            this.xmlbox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.xmlbox.Location = new System.Drawing.Point(0, 324);
+            this.xmlbox.Margin = new System.Windows.Forms.Padding(4);
             this.xmlbox.Name = "xmlbox";
             this.xmlbox.Size = new System.Drawing.Size(192, 30);
             this.xmlbox.TabIndex = 18;
@@ -85,7 +87,7 @@
             // 
             this.xmltext1.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xmltext1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(139)))), ((int)(((byte)(140)))), ((int)(((byte)(139)))));
-            this.xmltext1.Location = new System.Drawing.Point(-5, 263);
+            this.xmltext1.Location = new System.Drawing.Point(-5, 306);
             this.xmltext1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.xmltext1.Name = "xmltext1";
             this.xmltext1.Size = new System.Drawing.Size(204, 16);
@@ -124,7 +126,7 @@
             this.password.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.password.ForeColor = System.Drawing.Color.White;
             this.password.Location = new System.Drawing.Point(0, 235);
-            this.password.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.password.Margin = new System.Windows.Forms.Padding(4);
             this.password.Name = "password";
             this.password.PasswordChar = '*';
             this.password.Size = new System.Drawing.Size(192, 29);
@@ -138,7 +140,7 @@
             this.username.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.username.ForeColor = System.Drawing.Color.White;
             this.username.Location = new System.Drawing.Point(0, 187);
-            this.username.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.username.Margin = new System.Windows.Forms.Padding(4);
             this.username.Name = "username";
             this.username.Size = new System.Drawing.Size(192, 29);
             this.username.TabIndex = 11;
@@ -148,7 +150,7 @@
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.pictureBox1.Image = global::PlexWalk.Properties.Resources.logo;
             this.pictureBox1.Location = new System.Drawing.Point(-3, -1);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(192, 165);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -163,20 +165,44 @@
             this.btnLogin.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnLogin.ForeColor = System.Drawing.Color.Black;
             this.btnLogin.Image = global::PlexWalk.Properties.Resources.login;
-            this.btnLogin.Location = new System.Drawing.Point(-1, 334);
-            this.btnLogin.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnLogin.Location = new System.Drawing.Point(-1, 377);
+            this.btnLogin.Margin = new System.Windows.Forms.Padding(4);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(195, 28);
             this.btnLogin.TabIndex = 13;
             this.btnLogin.UseVisualStyleBackColor = false;
             this.btnLogin.Click += new System.EventHandler(this.button1_Click);
             // 
+            // checkBox1
+            // 
+            this.checkBox1.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.checkBox1.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox1.Location = new System.Drawing.Point(80, 285);
+            this.checkBox1.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(29, 22);
+            this.checkBox1.TabIndex = 22;
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // label1
+            // 
+            this.label1.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(139)))), ((int)(((byte)(140)))), ((int)(((byte)(139)))));
+            this.label1.Location = new System.Drawing.Point(13, 264);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(166, 16);
+            this.label1.TabIndex = 21;
+            this.label1.Text = "Remember me?";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // Login
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(43)))), ((int)(((byte)(48)))), ((int)(((byte)(52)))));
-            this.ClientSize = new System.Drawing.Size(192, 362);
+            this.ClientSize = new System.Drawing.Size(192, 404);
             this.Controls.Add(this.xmlurl);
             this.Controls.Add(this.xmlbox);
             this.Controls.Add(this.pictureBox1);
@@ -187,10 +213,12 @@
             this.Controls.Add(this.username);
             this.Controls.Add(this.xmltext1);
             this.Controls.Add(this.xmltext2);
+            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.label1);
             this.ForeColor = System.Drawing.SystemColors.ControlText;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Login";
@@ -215,5 +243,7 @@
         private System.Windows.Forms.Button btnLogin;
         private System.Windows.Forms.TextBox password;
         private System.Windows.Forms.TextBox username;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.Label label1;
     }
 }

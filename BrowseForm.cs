@@ -317,14 +317,42 @@ namespace PlexWalk
             PlexUtils.downloadDialog.Show();
         }
 
-        private void toolStripButton1_Click(object sender, EventArgs e)
+        private void AnimeButton_Click(object sender, EventArgs e)
         {
             new SearchResults(SearchResults.SearchType.Library, "Anime").Show();
         }
 
-        private void toolStripButton2_Click(object sender, EventArgs e)
+        private void LogoutButton_Click(object sender, EventArgs e)
         {
-            new SearchResults(SearchResults.SearchType.JsonSearchTestCase, "Anime").Show();
+            doLogout();
         }
+
+        private void doLogout()
+        {
+            LaunchArgs.Remove("token");
+            LaunchArgs.Remove("server_xml");
+            doSaveConfig();
+            this.Close();
+        }
+
+        public void doSaveConfig()
+        {
+            doSaveConfig(iniFileName);
+        }
+
+        private void doSaveConfig(string iniFileName)
+        {
+            using (FileStream f = File.Open(iniFileName, FileMode.Truncate))
+            using (StreamWriter sw = new StreamWriter(f))
+            {
+                foreach (var arg in LaunchArgs)
+                {
+                    if (arg.Key.ToLower() == "username" || arg.Key.ToLower() == "password")
+                        continue;
+                    sw.WriteLine("{0}={1}", arg.Key, arg.Value);
+                }
+            }
+        }
+
     }
 }

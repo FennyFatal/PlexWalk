@@ -30,6 +30,7 @@ namespace PlexWalk
         RefreshMethod SetRefreshMethod(RefreshMethod method);
         Dictionary<string, string> GetLaunchArgs();
         void CloseForm();
+        void doSaveConfig();
     }
     public class Descriptor
     {
@@ -199,6 +200,7 @@ namespace PlexWalk
             {
                 string parseME = null;
                 Boolean fail = false;
+                bool saveCredentials = false;
                 do
                 {
                     try
@@ -211,6 +213,7 @@ namespace PlexWalk
                         {
                             Login loginform = new Login();
                             loginform.ShowDialog();
+                            saveCredentials = loginform.saveCredential;
                             if (loginform.DialogResult == System.Windows.Forms.DialogResult.Cancel)
                             {
                                 rfi.CloseForm();
@@ -223,11 +226,22 @@ namespace PlexWalk
                                 rfi.SetRefreshMethod(RefreshMethod.Login);
                             }
                             else
+                            {
+                                if (saveCredentials)
+                                {
+                                    ((BrowseForm)rfi).LaunchArgs["server_xml"] = loginform.XmlUri;
+                                }
                                 return doServerXmlLogin(loginform.XmlUri, rfi);
+                            }
                         }
                         parseME = wc.DownloadString("https://plex.tv/pms/servers.xml");
                         wc.Headers["X-Plex-Client-Identifier"] = Descriptor.GUID;
                         Descriptor.myToken = parseLogin(wc.UploadString("https://plex.tv/users/sign_in.xml", String.Empty));
+                        if (saveCredentials)
+                        {
+                            ((BrowseForm)rfi).LaunchArgs["token"] = Descriptor.myToken;
+                            rfi.doSaveConfig();
+                        }
                         fail = false;
                     }
                     catch (Exception)
