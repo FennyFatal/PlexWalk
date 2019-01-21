@@ -230,6 +230,7 @@ namespace PlexWalk
                                 if (saveCredentials)
                                 {
                                     ((BrowseForm)rfi).LaunchArgs["server_xml"] = loginform.XmlUri;
+                                    rfi.doSaveConfig();
                                 }
                                 return doServerXmlLogin(loginform.XmlUri, rfi);
                             }
