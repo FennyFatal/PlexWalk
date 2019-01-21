@@ -22,12 +22,37 @@ namespace PlexWalk
     {
         private RefreshMethod method;
         static TreeNode selected = null;
+        public Dictionary<string, string> LaunchArgs = new Dictionary<string, string>();
+
+        private string iniFileName = "PlexWalk.ini";
 
         public BrowseForm(string[] args)
         {
             InitializeComponent();
+            //Create INI file if it does not exist.
+            if (!File.Exists(iniFileName))
+                File.Create(iniFileName).Close();
+
+            parseINI(File.ReadAllLines(iniFileName));
+            
+            //Override any values in the ini with values from the command line.
             if (args.Length > 0)
                 parseArgs(args);
+        }
+
+        private void parseINI(string[] iniLines)
+        {
+            foreach (string s in iniLines)
+            {
+                //# as comment character
+                if (s.Trim().StartsWith("#"))
+                    continue;
+                //All args will be split by an =
+                string[] chunks = s.Split('=');
+                //Allow any kind of quote or spacing around args
+                if (chunks.Length == 2)
+                    LaunchArgs[chunks[0].Trim("\t \"'".ToCharArray())] = chunks[1].Trim(" \"'".ToCharArray());
+            }
         }
         
         public void CloseForm()
@@ -52,8 +77,6 @@ namespace PlexWalk
         {
             return LaunchArgs;
         }
-
-        public Dictionary<string, string> LaunchArgs = new Dictionary<string, string>();
 
         private void parseArgs(string[] args)
         {
