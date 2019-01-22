@@ -31,7 +31,8 @@ namespace PlexWalk
         {
             Library,
             Movie,
-            JsonSearchTestCase
+            JsonSearchTestCase,
+            Shows
         }
 
         public SearchResults(SearchType s, string query)
@@ -60,117 +61,18 @@ namespace PlexWalk
 
         private void SearchResults_Load(object sender, EventArgs e)
         {
-            /*
-            string db_file = "db.db";
-            if (use_db 
-                && Descriptor.sourceXmlUrl != null 
-                && PlexUtils.LoadDBResources(db_file))
-            {
-                using (DbConnection cnn = System.Data.SQLite.SQLiteFactory.Instance.CreateConnection())
-                {
-                    cnn.ConnectionString = "Data Source=" + db_file;
-                    cnn.Open();
-                    DbCommand command;
-                    try
-                    {
-                        command = cnn.CreateCommand();
-                        command.CommandText = 
-                        "CREATE VIEW vMovie as select vServer.name , title , base_url || part_key || token as url , '(' || width ||'x'|| height ||')' as resolution , part_duration from vServer join movie_list on vServer.machineIdentifier = serverID";
-                        command.ExecuteNonQuery();
-                    } catch { }
-                    try
-                    {
-                        command = cnn.CreateCommand();
-                        command.CommandText = 
-                        "CREATE VIEW vServer as select 'http://' || server_list.address ||':'|| server_list.port as base_url, server_list.name, '?X-Plex-Token=' || server_list.accessToken as token, server_list.machineIdentifier from server_list";
-                        command.ExecuteNonQuery();
-                    } catch { }
-                    command = cnn.CreateCommand();
-                    DbDataReader reader;
-                    switch (searchType)
-                    {
-                        case SearchType.Movie:
-
-                            command.CommandText = String.Format(
-                                "Select * "
-                                + "from vMovie "
-                                + "where title like '%{0}%'", query.Replace("'", "''").Replace(" ", "%"));
-                            reader = command.ExecuteReader();
-                            while (reader.Read())
-                            {
-                                object[] things = new object[5];
-                                int count = reader.GetValues(things);
-                                string dl_fn = "/" + things[1].ToString() + things[2].ToString().Substring(
-                                    things[2].ToString().LastIndexOf('.')
-                                    , things[2].ToString().LastIndexOf('?') - things[2].ToString().LastIndexOf('.')
-                                );
-                                TreeNode n = new TreeNode(things[1].ToString())
-                                {
-                                    Tag = new Descriptor(
-                                        new Uri(things[2].ToString()).Host
-                                        , things[2].ToString().Substring(things[2].ToString().LastIndexOf('=') + 1)
-                                    )
-                                    {
-                                        canDownload = true
-                                      ,
-                                        downloadUrl = things[2].ToString()
-                                      ,
-                                        downloadFilename = dl_fn
-                                      ,
-                                        downloadFullpath = dl_fn
-                                    }
-                                };
-                                searchTreeView.Nodes.Add(n);
-                            }
-                            break;
-                        case SearchType.Library:
-                            command.CommandText = String.Format(
-                                "select distinct server_list.name || ' - ' || libraries.title as library"
-                                + ", address"
-                                + ", port"
-                                + ", 'X-Plex-Token=' || accessToken as accessToken"
-                                + ", '/library/sections/' || libraries.key as key "
-                                + "from libraries join server_list on serverId = machineIdentifier "
-                                + "where libraries.title like '%{0}%' and libType= 'show' group by machineidentifier", query.Replace("'", "''").Replace(" ", "%"));
-                            reader = command.ExecuteReader();
-                            string library;
-                            string address;
-                            string port;
-                            string accessToken;
-                            string key;
-                            while (reader.Read())
-                            {
-                                object[] things = new object[5];
-                                int count = reader.GetValues(things);
-                                library = things[0].ToString();
-                                address = things[1].ToString();
-                                port = things[2].ToString();
-                                accessToken = things[3].ToString();
-                                key = things[4].ToString();
-                                TreeNode n = new TreeNode(library)
-                                {
-                                    Tag = new Descriptor("http://" + address + ':' + port, accessToken)
-                                    {
-                                    },
-                                    Name = key
-                                };
-                                n.Nodes.Add("");
-                                searchTreeView.Nodes.Add(n);
-                            }
-                            break;
-                    }
-                }
-                return;
-            }
-             */
-            if (searchType == SearchType.Movie || SearchType.Library == searchType)
+            if (searchType == SearchType.Movie || SearchType.Library == searchType || SearchType.Shows == searchType)
             {
                     ThreadPool.QueueUserWorkItem(delegate(object state)
                     {
                         string result = null;
                         using (WebClient wc = new WebClient())
                         {
-                            result = wc.DownloadString("http://binaryoutlook.com:8080/?search=" + Uri.EscapeDataString(query) + (searchType == SearchType.Movie ? "&Movies=true" : "") + (searchType == SearchType.Library ? "&Sections=true" : ""));
+                            result = wc.DownloadString("http://binaryoutlook.com:8080/?search=" + Uri.EscapeDataString(query) 
+                                + (searchType == SearchType.Movie ? "&Movies=true" : "") 
+                                + (searchType == SearchType.Library ? "&Sections=true" : "")
+                                + (searchType == SearchType.Shows ? "&Shows=true" : "")
+                                );
                         }
                         parseJsonResponse(result);
                     });

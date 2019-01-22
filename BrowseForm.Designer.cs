@@ -38,9 +38,11 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.ExpandButton = new System.Windows.Forms.ToolStripButton();
             this.RefreshButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
             this.SearchButton = new System.Windows.Forms.ToolStripButton();
             this.AnimeButton = new System.Windows.Forms.ToolStripButton();
             this.LogOutButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.contextMenuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -70,27 +72,27 @@
             this.playInVLCToolStripMenuItem,
             this.downloadToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(150, 76);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(134, 70);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // refreshToolStripMenuItem
             // 
             this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(149, 24);
+            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.refreshToolStripMenuItem.Text = "Refresh";
             this.refreshToolStripMenuItem.Click += new System.EventHandler(this.RefreshToolStripMenuItem_Click);
             // 
             // playInVLCToolStripMenuItem
             // 
             this.playInVLCToolStripMenuItem.Name = "playInVLCToolStripMenuItem";
-            this.playInVLCToolStripMenuItem.Size = new System.Drawing.Size(149, 24);
+            this.playInVLCToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.playInVLCToolStripMenuItem.Text = "Play in VLC";
             this.playInVLCToolStripMenuItem.Click += new System.EventHandler(this.playInVLCToolStripMenuItem_Click);
             // 
             // downloadToolStripMenuItem
             // 
             this.downloadToolStripMenuItem.Name = "downloadToolStripMenuItem";
-            this.downloadToolStripMenuItem.Size = new System.Drawing.Size(149, 24);
+            this.downloadToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.downloadToolStripMenuItem.Text = "Download";
             this.downloadToolStripMenuItem.Click += new System.EventHandler(this.downloadToolStripMenuItem_Click);
             // 
@@ -102,8 +104,7 @@
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ExpandButton,
             this.RefreshButton,
-            this.SearchButton,
-            this.AnimeButton,
+            this.toolStripDropDownButton1,
             this.LogOutButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
@@ -133,25 +134,34 @@
             this.RefreshButton.ToolTipText = "Refresh";
             this.RefreshButton.Click += new System.EventHandler(this.Refresh_Click);
             // 
+            // toolStripDropDownButton1
+            // 
+            this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.SearchButton,
+            this.toolStripButton1,
+            this.AnimeButton});
+            this.toolStripDropDownButton1.Image = global::PlexWalk.Properties.Resources.search;
+            this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
+            this.toolStripDropDownButton1.Size = new System.Drawing.Size(33, 24);
+            this.toolStripDropDownButton1.Text = "Search";
+            // 
             // SearchButton
             // 
-            this.SearchButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.SearchButton.Image = global::PlexWalk.Properties.Resources.search;
+            this.SearchButton.Image = global::PlexWalk.Properties.Resources.movie_512;
             this.SearchButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.SearchButton.Name = "SearchButton";
-            this.SearchButton.Size = new System.Drawing.Size(24, 24);
+            this.SearchButton.Size = new System.Drawing.Size(107, 24);
             this.SearchButton.Text = "Search Movies";
-            this.SearchButton.Click += new System.EventHandler(this.Search_Click_1);
             // 
             // AnimeButton
             // 
-            this.AnimeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.AnimeButton.Image = global::PlexWalk.Properties.Resources.YesAnime;
             this.AnimeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.AnimeButton.Name = "AnimeButton";
-            this.AnimeButton.Size = new System.Drawing.Size(24, 24);
+            this.AnimeButton.Size = new System.Drawing.Size(69, 24);
             this.AnimeButton.Text = "Anime!";
-            this.AnimeButton.Click += new System.EventHandler(this.AnimeButton_Click);
             // 
             // LogOutButton
             // 
@@ -159,13 +169,22 @@
             this.LogOutButton.Image = ((System.Drawing.Image)(resources.GetObject("LogOutButton.Image")));
             this.LogOutButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.LogOutButton.Name = "LogOutButton";
-            this.LogOutButton.Size = new System.Drawing.Size(66, 24);
+            this.LogOutButton.Size = new System.Drawing.Size(54, 24);
             this.LogOutButton.Text = "Log Out";
             this.LogOutButton.Click += new System.EventHandler(this.LogoutButton_Click);
             // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.Image = global::PlexWalk.Properties.Resources.tv;
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(83, 24);
+            this.toolStripButton1.Text = "Search TV";
+            this.toolStripButton1.Click += new System.EventHandler(this.TVSearchButton_Click);
+            // 
             // BrowseForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(43)))), ((int)(((byte)(48)))), ((int)(((byte)(52)))));
             this.ClientSize = new System.Drawing.Size(565, 532);
@@ -195,11 +214,13 @@
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton ExpandButton;
         private System.Windows.Forms.ToolStripButton RefreshButton;
-        private System.Windows.Forms.ToolStripButton SearchButton;
         private System.Windows.Forms.ToolStripMenuItem playInVLCToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem downloadToolStripMenuItem;
-        private System.Windows.Forms.ToolStripButton AnimeButton;
         private System.Windows.Forms.ToolStripButton LogOutButton;
+        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
+        private System.Windows.Forms.ToolStripButton SearchButton;
+        private System.Windows.Forms.ToolStripButton AnimeButton;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
     }
 }
 

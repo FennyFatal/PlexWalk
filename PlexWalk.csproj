@@ -68,9 +68,7 @@
       <DependentUpon>DownloadDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="DownloadInfo.cs" />
-    <Compile Include="iTalk Theme.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="iTalk Theme.cs" />
     <Compile Include="PlexUtils.cs" />
     <Compile Include="SearchDialog.cs">
       <SubType>Form</SubType>
@@ -136,6 +134,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ILMergeOrder.txt" />
+    <None Include="Resources\tv.png" />
+    <None Include="Resources\movie-512.png" />
+    <None Include="Resources\movie.bmp" />
     <None Include="Resources\YesAnime.png" />
     <None Include="Resources\Anime.png" />
     <None Include="Properties\Resources\exit.png" />
