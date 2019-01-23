@@ -272,8 +272,7 @@ namespace PlexWalk
             {
                 descriptors.Add((Descriptor)t.Tag);
             }
-            SearchResults sr = new SearchResults(descriptors, myNewForm.query);
-            sr.Show();
+            new SearchResults(SearchResults.SearchType.Movie, myNewForm.query).Show();
         }
 
         private void Refresh_Click(object sender, EventArgs e)
@@ -365,6 +364,19 @@ namespace PlexWalk
                 descriptors.Add((Descriptor)t.Tag);
             }
             new SearchResults(SearchResults.SearchType.Shows, myNewForm.query).Show();
+        }
+
+        private void searchServersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Search myNewForm = new Search();
+            var dialog = myNewForm.ShowDialog();
+            //TODO: Create SearchResults window.
+            List<Descriptor> descriptors = new List<Descriptor>();
+            foreach (TreeNode t in plexTreeView.Nodes)
+            {
+                descriptors.Add((Descriptor)t.Tag);
+            }
+            new SearchResults(descriptors, myNewForm.query).Show();
         }
     }
 }

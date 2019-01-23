@@ -25,14 +25,15 @@ namespace PlexWalk
         string query;
         bool use_db;
 
-        SearchType searchType = SearchType.Movie;
+        SearchType searchType = SearchType.SearchServers;
 
         public enum SearchType
         {
             Library,
             Movie,
             JsonSearchTestCase,
-            Shows
+            Shows,
+            SearchServers
         }
 
         public SearchResults(SearchType s, string query)
@@ -40,14 +41,7 @@ namespace PlexWalk
             InitializeComponent();
             searchType = s;
             this.query = query;
-            switch (s)
-            {
-                case SearchType.Library:
-                case SearchType.Movie:
-                case SearchType.JsonSearchTestCase:
-                    use_db = false;
-                    break;
-            }
+            use_db = false;
         }
 
         public SearchResults(List<Descriptor> searches, string query, bool use_db = false)
@@ -61,7 +55,7 @@ namespace PlexWalk
 
         private void SearchResults_Load(object sender, EventArgs e)
         {
-            if (searchType == SearchType.Movie || SearchType.Library == searchType || SearchType.Shows == searchType)
+            if (searchType != SearchType.SearchServers)
             {
                     ThreadPool.QueueUserWorkItem(delegate(object state)
                     {
