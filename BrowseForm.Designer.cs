@@ -151,6 +151,7 @@
             // 
             // LogOutButton
             // 
+            this.LogOutButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.LogOutButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.LogOutButton.Image = ((System.Drawing.Image)(resources.GetObject("LogOutButton.Image")));
             this.LogOutButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -166,6 +167,7 @@
             this.AnimeButton.Name = "AnimeButton";
             this.AnimeButton.Size = new System.Drawing.Size(181, 26);
             this.AnimeButton.Text = "Anime!";
+            this.AnimeButton.Click += new System.EventHandler(this.AnimeButton_Click);
             // 
             // toolStripButton1
             // 
@@ -183,6 +185,7 @@
             this.SearchButton.Name = "SearchButton";
             this.SearchButton.Size = new System.Drawing.Size(181, 26);
             this.SearchButton.Text = "Search Movies";
+            this.SearchButton.Click += new System.EventHandler(this.Search_Click_1);
             // 
             // searchServersToolStripMenuItem
             // 
