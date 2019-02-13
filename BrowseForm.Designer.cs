@@ -40,10 +40,12 @@
             this.RefreshButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
             this.LogOutButton = new System.Windows.Forms.ToolStripButton();
-            this.AnimeButton = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripMenuItem();
             this.SearchButton = new System.Windows.Forms.ToolStripMenuItem();
             this.searchServersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.searchSectionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.AnimeButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.customToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -141,7 +143,7 @@
             this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.SearchButton,
             this.toolStripButton1,
-            this.AnimeButton,
+            this.searchSectionsToolStripMenuItem,
             this.searchServersToolStripMenuItem});
             this.toolStripDropDownButton1.Image = global::PlexWalk.Properties.Resources.search;
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -159,15 +161,6 @@
             this.LogOutButton.Size = new System.Drawing.Size(66, 24);
             this.LogOutButton.Text = "Log Out";
             this.LogOutButton.Click += new System.EventHandler(this.LogoutButton_Click);
-            // 
-            // AnimeButton
-            // 
-            this.AnimeButton.Image = global::PlexWalk.Properties.Resources.YesAnime;
-            this.AnimeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.AnimeButton.Name = "AnimeButton";
-            this.AnimeButton.Size = new System.Drawing.Size(181, 26);
-            this.AnimeButton.Text = "Anime!";
-            this.AnimeButton.Click += new System.EventHandler(this.AnimeButton_Click);
             // 
             // toolStripButton1
             // 
@@ -194,6 +187,30 @@
             this.searchServersToolStripMenuItem.Size = new System.Drawing.Size(181, 26);
             this.searchServersToolStripMenuItem.Text = "Search Servers";
             this.searchServersToolStripMenuItem.Click += new System.EventHandler(this.searchServersToolStripMenuItem_Click);
+            // 
+            // searchSectionsToolStripMenuItem
+            // 
+            this.searchSectionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.AnimeButton,
+            this.customToolStripMenuItem});
+            this.searchSectionsToolStripMenuItem.Name = "searchSectionsToolStripMenuItem";
+            this.searchSectionsToolStripMenuItem.Size = new System.Drawing.Size(187, 26);
+            this.searchSectionsToolStripMenuItem.Text = "Search Sections";
+            // 
+            // AnimeButton
+            // 
+            this.AnimeButton.Image = global::PlexWalk.Properties.Resources.YesAnime;
+            this.AnimeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.AnimeButton.Name = "AnimeButton";
+            this.AnimeButton.Size = new System.Drawing.Size(181, 26);
+            this.AnimeButton.Text = "Anime!";
+            // 
+            // customToolStripMenuItem
+            // 
+            this.customToolStripMenuItem.Name = "customToolStripMenuItem";
+            this.customToolStripMenuItem.Size = new System.Drawing.Size(181, 26);
+            this.customToolStripMenuItem.Text = "Custom";
+            this.customToolStripMenuItem.Click += new System.EventHandler(this.customToolStripMenuItem_Click);
             // 
             // BrowseForm
             // 
@@ -233,8 +250,10 @@
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
         private System.Windows.Forms.ToolStripMenuItem SearchButton;
         private System.Windows.Forms.ToolStripMenuItem toolStripButton1;
-        private System.Windows.Forms.ToolStripMenuItem AnimeButton;
         private System.Windows.Forms.ToolStripMenuItem searchServersToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem searchSectionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem AnimeButton;
+        private System.Windows.Forms.ToolStripMenuItem customToolStripMenuItem;
     }
 }
 

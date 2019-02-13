@@ -355,18 +355,21 @@ namespace PlexWalk
 
         private void TVSearchButton_Click(object sender, EventArgs e)
         {
-            Search myNewForm = new Search();
-            var dialog = myNewForm.ShowDialog();
-            //TODO: Create SearchResults window.
-            List<Descriptor> descriptors = new List<Descriptor>();
-            foreach (TreeNode t in plexTreeView.Nodes)
-            {
-                descriptors.Add((Descriptor)t.Tag);
-            }
-            new SearchResults(SearchResults.SearchType.Shows, myNewForm.query).Show();
+            new SearchResults(SearchResults.SearchType.Shows, doSearch().Item2).Show();
         }
 
         private void searchServersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var values = doSearch();
+            new SearchResults(values.Item1,values.Item2).Show();
+        }
+
+        private void customToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new SearchResults(SearchResults.SearchType.Library, doSearch().Item2).Show();
+        }
+
+        private Tuple<List<Descriptor>,string> doSearch()
         {
             Search myNewForm = new Search();
             var dialog = myNewForm.ShowDialog();
@@ -376,7 +379,7 @@ namespace PlexWalk
             {
                 descriptors.Add((Descriptor)t.Tag);
             }
-            new SearchResults(descriptors, myNewForm.query).Show();
+            return Tuple.Create(descriptors,myNewForm.query);
         }
     }
 }
