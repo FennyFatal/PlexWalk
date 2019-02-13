@@ -92,7 +92,8 @@ namespace PlexWalk
                         downloadUrl.Substring(downloadUrl.LastIndexOf("file."))
                         , Uri.EscapeDataString(chunks[chunks.Length - 1])
                     ) : downloadUrl + '/' + Uri.EscapeDataString(chunks[chunks.Length - 1]) )
-                + (token != "" ? (!downloadUrl.Contains("?") ? '?' : '&') + token : "");
+                + (token != "" ? (!downloadUrl.Contains("?") ? '?' : '&') + token : "")
+                + "&download=1";
         }
     }
     class PlexUtils
